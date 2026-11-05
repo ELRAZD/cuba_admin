@@ -10,148 +10,34 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col call-chat-sidebar col-sm-12">
-        <div class="card">
-            <div class="card-body chat-body">
-                <div class="chat-box">
-                    <!-- Chat left side Start-->
-                    <div class="chat-left-aside">
-                        <div class="media">
-                            <img class="rounded-circle user-image" src="{{ user.get_avatar_url }}" alt="">
-                            <div class="about">
-                                <div class="name f-w-600">{{ user.full_name }}</div>
-                                <div class="status">آنلاین</div>
-                            </div>
-                        </div>
-                        <div class="people-list" id="people-list">
-                            <div class="search">
-                                <form class="theme-form">
-                                    <div class="mb-3">
-                                        <input class="form-control" type="text" placeholder="جستجو">
-                                        <i class="fa fa-search"></i>
-                                    </div>
-                                </form>
-                            </div>
-                            <ul class="list">
-                                {% for u in all_users %}
-                                <li class="clearfix">
-                                    <img class="rounded-circle user-image" src="{{ u.get_avatar_url }}" alt="">
-                                    <div class="status-circle {% if u.is_online %}online{% else %}offline{% endif %}"></div>
-                                    <a href="{% url 'chat:private_chat' u.id %}">
-                                        <div class="about">
-                                            <div class="name">{{ u.full_name }}</div>
-                                            <div class="status">{{ u.get_role_display }}</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                {% empty %}
-                                <li class="text-center f-light">کاربری موجود نیست.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- Chat left side Ends-->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col call-chat-body">
-        <div class="card">
-            <div class="card-body p-0">
-                <div class="row chat-box">
-                    <!-- Chat right side start-->
-                    <div class="col pe-0 chat-right-aside">
-                        <div class="chat">
-                            <!-- chat-header -->
-                            <div class="chat-header clearfix">
-                                {% if active_user %}
-                                <img class="rounded-circle" src="{{ active_user.get_avatar_url }}" alt="">
+    <div class="row">
+        <div class="col call-chat-sidebar col-sm-12">
+            <div class="card">
+                <div class="card-body chat-body">
+                    <div class="chat-box">
+                        <!-- Chat left side Start-->
+                        <div class="chat-left-aside">
+                            <div class="media">
+                                <img class="rounded-circle user-image" src="{{ user.get_avatar_url }}" alt="">
                                 <div class="about">
-                                    <div class="name">{{ active_user.full_name }}</div>
-                                    <div class="status">{{ active_user.get_role_display }}</div>
+                                    <div class="name f-w-600">{{ user.full_name }}</div>
+                                    <div class="status">آنلاین</div>
                                 </div>
-                                {% else %}
-                                <div class="about">
-                                    <div class="name">کاربری انتخاب نشده</div>
+                            </div>
+                            <div class="people-list" id="people-list">
+                                <div class="search">
+                                    <form class="theme-form">
+                                        <div class="mb-3">
+                                            <input class="form-control" type="text" placeholder="جستجو">
+                                            <i class="fa fa-search"></i>
+                                        </div>
+                                    </form>
                                 </div>
-                                {% endif %}
-                                <ul class="list-inline float-start float-sm-end chat-menu-icons">
-                                    <li class="list-inline-item"><a href="#"><i class="icon-search"></i></a></li>
-                                    <li class="list-inline-item"><a href="#"><i class="icon-clip"></i></a></li>
-                                    <li class="list-inline-item"><a href="#"><i class="icon-headphone-alt"></i></a></li>
-                                    <li class="list-inline-item"><a href="#"><i class="icon-video-camera"></i></a></li>
-                                    <li class="list-inline-item toogle-bar"><a href="#"><i class="icon-menu"></i></a></li>
-                                </ul>
-                            </div>
-                            <!-- chat-history -->
-                            <div class="chat-history chat-msg-box custom-scrollbar">
-                                <ul>
-                                    {% for msg in messages %}
-                                    <li {% if not forloop.first %}class="clearfix"{% endif %}>
-                                        <div class="message {% if msg.sender == user %}my-message{% else %}other-message pull-right{% endif %}">
-                                            <img class="rounded-circle {% if msg.sender == user %}float-start{% else %}float-end{% endif %} chat-user-img img-30"
-                                                 src="{{ msg.sender.get_avatar_url }}" alt="">
-                                            <div class="message-data {% if msg.sender == user %}text-end{% endif %}">
-                                                <span class="message-data-time">{{ msg.created_at|date:"H:i" }}</span>
-                                            </div>
-                                            {{ msg.body }}
-                                        </div>
-                                    </li>
-                                    {% empty %}
-                                    <li class="text-center f-light">پیامی وجود ندارد. اولین پیام را بفرستید!</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <!-- end chat-history-->
-
-                            <!-- chat-message form -->
-                            {% if active_user %}
-                            <div class="chat-message clearfix">
-                                <form method="post" action="{% url 'chat:private_chat' active_user.id %}">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-xl-12 d-flex">
-                                            <div class="smiley-box bg-primary">
-                                                <div class="picker"><img src="{% static 'assets/images/smiley.png' %}" alt=""></div>
-                                            </div>
-                                            <div class="input-group text-box">
-                                                <input class="form-control input-txt-bx" type="text" name="body"
-                                                       placeholder="پیام خود را بنویسید......" required>
-                                                <button class="input-group-text btn btn-primary" type="submit">ارسال</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            {% endif %}
-                            <!-- end chat-message-->
-                        </div>
-                    </div>
-                    <!-- Chat right side ends-->
-
-                    <!-- Chat menu / info tabs -->
-                    <div class="col ps-0 chat-menu">
-                        <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">
-                            <li class="nav-item"><a class="nav-link active" id="info-home-tab" data-bs-toggle="tab" href="#info-home" role="tab" aria-selected="true">مخاطبین</a>
-                                <div class="material-border"></div>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" id="profile-info-tab" data-bs-toggle="tab" href="#info-profile" role="tab" aria-selected="false">وضعیت</a>
-                                <div class="material-border"></div>
-                            </li>
-                            <li class="nav-item"><a class="nav-link" id="contact-info-tab" data-bs-toggle="tab" href="#info-contact" role="tab" aria-selected="false">پروفایل</a>
-                                <div class="material-border"></div>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="info-tabContent">
-                            <!-- Tab 1: Contacts -->
-                            <div class="tab-pane fade show active" id="info-home" role="tabpanel" aria-labelledby="info-home-tab">
-                                <div class="people-list">
-                                    <ul class="list">
-                                        {% for u in all_users %}
+                                <ul class="list">
+                                    {% for u in all_users %}
                                         <li class="clearfix">
                                             <img class="rounded-circle user-image" src="{{ u.get_avatar_url }}" alt="">
+                                            <div class="status-circle {% if u.is_online %}online{% else %}offline{% endif %}"></div>
                                             <a href="{% url 'chat:private_chat' u.id %}">
                                                 <div class="about">
                                                     <div class="name">{{ u.full_name }}</div>
@@ -159,54 +45,195 @@
                                                 </div>
                                             </a>
                                         </li>
-                                        {% empty %}
+                                    {% empty %}
                                         <li class="text-center f-light">کاربری موجود نیست.</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Chat left side Ends-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col call-chat-body">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="row chat-box">
+                        <!-- Chat right side start-->
+                        <div class="col pe-0 chat-right-aside">
+                            <div class="chat">
+                                <!-- chat-header -->
+                                <div class="chat-header clearfix">
+                                    {% if active_user %}
+                                        <img class="rounded-circle" src="{{ active_user.get_avatar_url }}" alt="">
+                                        <div class="about">
+                                            <div class="name">{{ active_user.full_name }}</div>
+                                            <div class="status">{{ active_user.get_role_display }}</div>
+                                        </div>
+                                    {% else %}
+                                        <div class="about">
+                                            <div class="name">کاربری انتخاب نشده</div>
+                                        </div>
+                                    {% endif %}
+                                    <ul class="list-inline float-start float-sm-end chat-menu-icons">
+                                        <li class="list-inline-item"><a href="#"><i class="icon-search"></i></a></li>
+                                        <li class="list-inline-item"><a href="#"><i class="icon-clip"></i></a></li>
+                                        <li class="list-inline-item"><a href="#"><i class="icon-headphone-alt"></i></a>
+                                        </li>
+                                        <li class="list-inline-item"><a href="#"><i class="icon-video-camera"></i></a>
+                                        </li>
+                                        <li class="list-inline-item toogle-bar"><a href="#"><i
+                                                class="icon-menu"></i></a></li>
+                                    </ul>
+                                </div>
+                                <!-- chat-history -->
+                                <div
+                                        class="chat-history chat-msg-box custom-scrollbar"
+                                        id="chat-history"
+                                        data-messages-url="{% url 'chat:messages_api' active_room.id %}"
+                                        data-current-user-id="{{ request.user.id }}"
+                                >
+                                    <ul id="chat-messages"
+                                        data-last-id="{% if messages %}{{ messages.last.id }}{% else %}0{% endif %}">
+                                        {% for msg in messages %}
+                                            <li {% if not forloop.first %}class="clearfix"{% endif %}>
+                                                <div class="message {% if msg.sender == user %}my-message{% else %}other-message pull-right{% endif %}">
+                                                    <img class="rounded-circle {% if msg.sender == user %}float-start{% else %}float-end{% endif %} chat-user-img img-30"
+                                                         src="{{ msg.sender.get_avatar_url }}" alt="">
+                                                    <div class="message-data {% if msg.sender == user %}text-end{% endif %}">
+                                                        <span class="message-data-time">{{ msg.created_at|date:"H:i" }}</span>
+                                                    </div>
+                                                    {{ msg.body }}
+                                                </div>
+                                            </li>
+                                        {% empty %}
+                                            <li class="text-center f-light">پیامی وجود ندارد. اولین پیام را بفرستید!
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
-                            </div>
+                                <!-- end chat-history-->
 
-                            <!-- Tab 2: Status -->
-                            <div class="tab-pane fade" id="info-profile" role="tabpanel" aria-labelledby="profile-info-tab">
-                                <div class="people-list">
-                                    <div class="search">
-                                        <form class="theme-form">
-                                            <div class="mb-3">
-                                                <input class="form-control" type="text" placeholder="وضعیت خود را بنویسید...">
-                                                <i class="fa fa-pencil"></i>
+                                <!-- chat-message form -->
+                                {% if active_user %}
+                                    <div class="chat-message clearfix">
+                                        <form method="post" action="{% url 'chat:private_chat' active_user.id %}">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-xl-12 d-flex">
+                                                    <div class="smiley-box bg-primary">
+                                                        <div class="picker"><img
+                                                                src="{% static 'assets/images/smiley.png' %}" alt="">
+                                                        </div>
+                                                    </div>
+                                                    <div class="input-group text-box">
+                                                        <input class="form-control input-txt-bx" type="text" name="body"
+                                                               placeholder="پیام خود را بنویسید......" required>
+                                                        <button class="input-group-text btn btn-primary" type="submit">
+                                                            ارسال
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
-                                </div>
-                                <div class="status">
-                                    <p class="font-dark">فعال</p>
-                                    <hr>
-                                    <p>وضعیت آنلاین فعلی شما</p>
-                                </div>
+                                {% endif %}
+                                <!-- end chat-message-->
                             </div>
+                        </div>
+                        <!-- Chat right side ends-->
 
-                            <!-- Tab 3: Profile -->
-                            <div class="tab-pane fade" id="info-contact" role="tabpanel" aria-labelledby="contact-info-tab">
-                                <div class="user-profile">
-                                    <div class="image">
-                                        <div class="avatar text-center">
-                                            <img alt="" src="{{ user.get_avatar_url }}">
-                                        </div>
-                                        <div class="icon-wrapper"><i class="icofont icofont-pencil-alt-5"></i></div>
+                        <!-- Chat menu / info tabs -->
+                        <div class="col ps-0 chat-menu">
+                            <ul class="nav nav-tabs border-tab nav-primary" id="info-tab" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" id="info-home-tab" data-bs-toggle="tab"
+                                                        href="#info-home" role="tab" aria-selected="true">مخاطبین</a>
+                                    <div class="material-border"></div>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" id="profile-info-tab" data-bs-toggle="tab"
+                                                        href="#info-profile" role="tab" aria-selected="false">وضعیت</a>
+                                    <div class="material-border"></div>
+                                </li>
+                                <li class="nav-item"><a class="nav-link" id="contact-info-tab" data-bs-toggle="tab"
+                                                        href="#info-contact" role="tab"
+                                                        aria-selected="false">پروفایل</a>
+                                    <div class="material-border"></div>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="info-tabContent">
+                                <!-- Tab 1: Contacts -->
+                                <div class="tab-pane fade show active" id="info-home" role="tabpanel"
+                                     aria-labelledby="info-home-tab">
+                                    <div class="people-list">
+                                        <ul class="list">
+                                            {% for u in all_users %}
+                                                <li class="clearfix">
+                                                    <img class="rounded-circle user-image" src="{{ u.get_avatar_url }}"
+                                                         alt="">
+                                                    <a href="{% url 'chat:private_chat' u.id %}">
+                                                        <div class="about">
+                                                            <div class="name">{{ u.full_name }}</div>
+                                                            <div class="status">{{ u.get_role_display }}</div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            {% empty %}
+                                                <li class="text-center f-light">کاربری موجود نیست.</li>
+                                            {% endfor %}
+                                        </ul>
                                     </div>
-                                    <div class="user-content text-center">
-                                        <h5 class="text-uppercase">{{ user.full_name }}</h5>
-                                        <div class="social-media">
-                                            <ul class="list-inline">
-                                                <li class="list-inline-item"><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                                <li class="list-inline-item"><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                                <li class="list-inline-item"><a href="#"><i class="fa fa-instagram"></i></a></li>
-                                            </ul>
+                                </div>
+
+                                <!-- Tab 2: Status -->
+                                <div class="tab-pane fade" id="info-profile" role="tabpanel"
+                                     aria-labelledby="profile-info-tab">
+                                    <div class="people-list">
+                                        <div class="search">
+                                            <form class="theme-form">
+                                                <div class="mb-3">
+                                                    <input class="form-control" type="text"
+                                                           placeholder="وضعیت خود را بنویسید...">
+                                                    <i class="fa fa-pencil"></i>
+                                                </div>
+                                            </form>
                                         </div>
+                                    </div>
+                                    <div class="status">
+                                        <p class="font-dark">فعال</p>
                                         <hr>
-                                        <div class="text-center">
-                                            <p class="mb-0">{{ user.email }}</p>
-                                            <p class="mb-0">{{ user.phone|default:'---' }}</p>
+                                        <p>وضعیت آنلاین فعلی شما</p>
+                                    </div>
+                                </div>
+
+                                <!-- Tab 3: Profile -->
+                                <div class="tab-pane fade" id="info-contact" role="tabpanel"
+                                     aria-labelledby="contact-info-tab">
+                                    <div class="user-profile">
+                                        <div class="image">
+                                            <div class="avatar text-center">
+                                                <img alt="" src="{{ user.get_avatar_url }}">
+                                            </div>
+                                            <div class="icon-wrapper"><i class="icofont icofont-pencil-alt-5"></i></div>
+                                        </div>
+                                        <div class="user-content text-center">
+                                            <h5 class="text-uppercase">{{ user.full_name }}</h5>
+                                            <div class="social-media">
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item"><a href="#"><i
+                                                            class="fa fa-facebook"></i></a></li>
+                                                    <li class="list-inline-item"><a href="#"><i
+                                                            class="fa fa-twitter"></i></a></li>
+                                                    <li class="list-inline-item"><a href="#"><i
+                                                            class="fa fa-instagram"></i></a></li>
+                                                </ul>
+                                            </div>
+                                            <hr>
+                                            <div class="text-center">
+                                                <p class="mb-0">{{ user.email }}</p>
+                                                <p class="mb-0">{{ user.phone|default:'---' }}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -217,5 +244,89 @@
             </div>
         </div>
     </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const chatHistory = document.getElementById('chat-history');
+            const messagesList = document.getElementById('chat-messages');
+
+            if (!chatHistory || !messagesList) return;
+
+            const apiUrl = chatHistory.dataset.messagesUrl;
+            const currentUserId = Number(chatHistory.dataset.currentUserId);
+
+            let lastMessageId = Number(messagesList.dataset.lastId || 0);
+
+            async function loadNewMessages() {
+                try {
+                    const response = await fetch(
+                        `${apiUrl}?after=${lastMessageId}`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) return;
+
+                    const result = await response.json();
+
+                    result.messages.forEach(function (msg) {
+
+                        const li = document.createElement('li');
+
+                        li.className = 'clearfix';
+
+                        const message = document.createElement('div');
+
+                        message.className =
+                            Number(msg.sender_id) === currentUserId
+                                ? 'message my-message'
+                                : 'message other-message pull-right';
+
+                        const time = document.createElement('div');
+
+                        time.className = 'message-data';
+
+                        const timeText = document.createElement('span');
+
+                        timeText.className = 'message-data-time';
+                        timeText.textContent = msg.created_at;
+
+                        time.appendChild(timeText);
+
+                        const body = document.createElement('div');
+
+                        body.textContent = msg.body;
+
+                        message.appendChild(time);
+                        message.appendChild(body);
+
+                        li.appendChild(message);
+
+                        messagesList.appendChild(li);
+
+                        lastMessageId = Math.max(
+                            lastMessageId,
+                            Number(msg.id)
+                        );
+                    });
+
+                    messagesList.dataset.lastId = lastMessageId;
+
+                    if (result.messages.length > 0) {
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+
+                } catch (error) {
+                    console.error('Chat error:', error);
+                }
+            }
+
+            setInterval(loadNewMessages, 2000);
+
+        });
+    </script>
 {% endblock %}
