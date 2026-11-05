@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}فاکتورهای من{% endblock %}
+{% block page_title %}فاکتورهای من{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>فهرست فاکتورها</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>شماره فاکتور</th>
+                            <th>شماره سفارش</th>
+                            <th>تاریخ صدور</th>
+                            <th>مبلغ</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for invoice in invoices %}
+                        <tr>
+                            <td>{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.order.id }}</td>
+                            <td>{{ invoice.issued_at|date:"Y/m/d" }}</td>
+                            <td>{{ invoice.order.total_price|intcomma }}</td>
+                            <td>
+                                <a href="{% url 'ecommerce:invoice_detail' invoice.invoice_number %}"
+                                   class="btn btn-primary btn-sm">
+                                    مشاهده
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                فاکتوری وجود ندارد.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

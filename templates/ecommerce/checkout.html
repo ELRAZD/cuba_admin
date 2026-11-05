@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}تسویه حساب | کوبا{% endblock %}
+{% block page_title %}تسویه حساب{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item active">تسویه حساب</li>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid checkout">
+        <div class="card">
+            <div class="card-header">
+                <h5>جزئیات صورت‌حساب</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-7 col-sm-12">
+                        <form id="checkout-form"
+                              method="post"
+                              action="{% url 'ecommerce:checkout' %}">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <div class="row">
+                                <div class="mb-3 col-sm-12">
+                                    <label for="id_full_name">نام و نام خانوادگی</label>
+                                    {{ form.full_name }}
+                                    {% if form.full_name.errors %}
+                                        <div class="text-danger small">{{ form.full_name.errors.0 }}</div>{% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-sm-6">
+                                    <label for="id_phone">تلفن</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger small">{{ form.phone.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3 col-sm-6">
+                                    <label for="id_email">آدرس ایمیل</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_city">شهر</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}
+                                    <div class="text-danger small">{{ form.city.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_address">آدرس</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                    <div class="text-danger small">{{ form.address.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_postal_code">کد پستی</label>
+                                {{ form.postal_code }}
+                                {% if form.postal_code.errors %}
+                                    <div class="text-danger small">{{ form.postal_code.errors.0 }}</div>{% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_payment_method">روش پرداخت</label>
+                                {{ form.payment_method }}
+                                {% if form.payment_method.errors %}
+                                    <div class="text-danger small">{{ form.payment_method.errors.0 }}</div>{% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-xl-5 col-sm-12">
+                        <div class="checkout-details">
+                            <div class="order-box">
+                                <div class="title-box">
+                                    <div class="checkbox-title">
+                                        <h4>محصول</h4>
+                                        <span>مجموع</span>
+                                    </div>
+                                </div>
+                                <ul class="qty">
+                                    {% for item in cart.items.all %}
+                                        <li>
+                                            {{ item.product.name }} × {{ item.quantity }}
+                                            <span>{{ item.get_total|intcomma }} ت</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <ul class="sub-total">
+                                    <li>جمع کل<span class="count">{{ total|intcomma }} ت</span></li>
+                                    <li class="shipping-class">حمل و نقل
+                                        <div class="shopping-checkout-option">
+                                            <label class="d-block" for="chk-ani">
+                                                <input class="checkbox_animated" id="chk-ani" type="checkbox"
+                                                       checked="">رایگان
+                                            </label>
+                                            <label class="d-block" for="chk-ani1">
+                                                <input class="checkbox_animated" id="chk-ani1" type="checkbox">پست
+                                                پیشتاز
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul class="sub-total total">
+                                    <li>مجموع <span class="count">{{ total|intcomma }} ت</span></li>
+                                </ul>
+                                <div class="order-place">
+                                    <button type="submit"
+                                            form="checkout-form"
+                                            class="btn btn-primary">
+                                        ثبت سفارش
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد تجارت الکترونیک | کوبا{% endblock %}
+{% block page_title %}تجارت الکترونیک{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">تجارت الکترونیک</li>
+{% endblock %}
+
+{% block content %}
+<div class="row size-column">
+    <div class="col-xxl-10 col-md-12">
+        <div class="row">
+
+            <!-- Balance -->
+            <div class="col-xxl-5 col-md-7">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card o-hidden">
+                            <div class="card-body balance-widget">
+                                <span class="f-w-500 f-light">موجودی کل</span>
+                                <h4 class="mb-3 mt-1 f-w-500 f-22">$<span class="counter">{{ revenue|default:0|intcomma }}</span><span class="f-light f-14 ms-1">این ماه</span></h4>
+                                <a class="purchase-btn btn btn-primary" href="{% url 'ecommerce:order_history' %}">مشاهده سوابق</a>
+                                <div class="mobile-right-img">
+                                    <img class="left-mobile-img" src="{% static 'assets/images/dashboard-2/widget-img.png' %}" alt="">
+                                    <img class="mobile-img" src="{% static 'assets/images/dashboard-2/mobile.gif' %}" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card small-widget">
+                            <div class="card-body primary">
+                                <span class="f-light">سفارشات جدید</span>
+                                <div class="d-flex align-items-end gap-1">
+                                    <h4>{{ new_orders|default:0|intcomma }}</h4>
+                                    <span class="font-primary f-12 f-w-500"><i class="icon-arrow-up"></i><span>+50%</span></span>
+                                </div>
+                                <div class="bg-gradient">
+                                    <svg class="stroke-icon svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#new-order"></use></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card small-widget">
+                            <div class="card-body warning">
+                                <span class="f-light">مشتریان</span>
+                                <div class="d-flex align-items-end gap-1">
+                                    <h4>{{ customers_count|default:0|intcomma }}</h4>
+                                    <span class="font-warning f-12 f-w-500"><i class="icon-arrow-up"></i><span>+20%</span></span>
+                                </div>
+                                <div class="bg-gradient">
+                                    <svg class="stroke-icon svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#customers"></use></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Customer -->
+            <div class="col-xxl-3 col-md-5">
+                <div class="card">
+                    <div class="card-header card-no-border">
+                        <h5 class="m-0">مشتریان ارزشمند</h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        <table class="table table-bordernone">
+                            <tbody>
+                                {% for u in recent_users|slice:":5" %}
+                                <tr>
+                                    <td><img class="img-fluid img-40 rounded-circle me-2" src="{{ u.get_avatar_url }}" alt=""></td>
+                                    <td class="img-content-box">
+                                        <a class="f-w-500" href="{% url 'accounts:profile' %}">{{ u.full_name }}</a>
+                                        <span class="f-light d-block">{{ u.email }}</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="2" class="text-center f-light">کاربری موجود نیست.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Goal -->
+            <div class="col-xxl-4 col-sm-6">
+                <div class="card">
+                    <div class="card-header card-no-border"><h5 class="m-0">هدف این ماه</h5></div>
+                    <div class="card-body pt-0">
+                        <div class="light-card balance-card d-inline-block">
+                            <h4 class="mb-0">{{ monthly_sales|default:0|intcomma }} T <span class="f-light f-14">(هدف 15,080)</span></h4>
+                        </div>
+                        <div class="order-wrapper"><div id="order-goal"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Overview Chart -->
+            <div class="col-xxl-9">
+                <div class="card">
+                    <div class="card-header card-no-border"><h5>نمای کلی سفارش</h5></div>
+                    <div class="card-body pt-0">
+                        <div class="current-sale-container order-container">
+                            <div class="overview-wrapper" id="orderoverview"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products -->
+            <div class="col-xxl-3 col-sm-6">
+                <div class="card">
+                    <div class="card-header card-no-border"><h5>پرفروش‌ها</h5></div>
+                    <div class="card-body pt-0">
+                        <ul class="list-unstyled">
+                            {% for p in top_products %}
+                            <li class="mb-3">
+                                <div class="media">
+                                    {% if p.image %}<img class="img-40 rounded-circle me-2" src="{{ p.image.url }}" alt="">{% endif %}
+                                    <div class="media-body">
+                                        <h6 class="mb-0"><a href="{% url 'ecommerce:product_detail' p.slug %}">{{ p.name }}</a></h6>
+                                        <span class="f-light">{{ p.sold }} فروش</span>
+                                    </div>
+                                </div>
+                            </li>
+                            {% empty %}
+                            <li class="text-center f-light">محصولی موجود نیست.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders Table -->
+            <div class="col-xxl-5">
+                <div class="card">
+                    <div class="card-header card-no-border d-flex justify-content-between">
+                        <h5 class="m-0">سفارشات اخیر</h5>
+                        <a class="f-light" href="{% url 'ecommerce:order_history' %}">همه</a>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="f-light">شماره</th>
+                                        <th class="f-light">مشتری</th>
+                                        <th class="f-light">مبلغ</th>
+                                        <th class="f-light">وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in recent_orders %}
+                                    <tr>
+                                        <td class="f-w-500">#{{ order.pk }}</td>
+                                        <td>{{ order.full_name }}</td>
+                                        <td class="f-w-500">{{ order.total_price|intcomma }} T</td>
+                                        <td class="f-w-500">
+                                            <div class="recent-status {% if order.status == 'paid' %}font-success{% else %}font-warning{% endif %}">
+                                                {{ order.get_status_display }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="4" class="text-center f-light">سفارشی موجود نیست.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+<script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+{% endblock %}

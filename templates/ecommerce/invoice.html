@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}فاکتور {{ invoice.invoice_number }} | کوبا{% endblock %}
+{% block page_title %}فاکتور{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item active">فاکتور</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-sm-6">
+                <div class="media">
+                    <img class="img-fluid me-3" src="{% static 'assets/images/logo/logo.png' %}" alt="logo"
+                         style="height:50px;">
+                </div>
+            </div>
+            <div class="col-sm-6 text-end">
+                <h4>فاکتور</h4>
+                <p class="mb-0 f-light">شماره: <strong>{{ invoice.invoice_number }}</strong></p>
+                <p class="mb-0 f-light">تاریخ: {{ invoice.issued_at|date:"Y/m/d" }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Customer & Order Info -->
+        <div class="row mb-4">
+            <div class="col-sm-6">
+                <h6>اطلاعات مشتری</h6>
+                <p class="mb-1">{{ invoice.order.full_name }}</p>
+                <p class="mb-1 f-light">{{ invoice.order.email }}</p>
+                <p class="mb-1 f-light">{{ invoice.order.phone }}</p>
+                <p class="mb-0 f-light">{{ invoice.order.address }}, {{ invoice.order.city }}</p>
+            </div>
+            <div class="col-sm-6 text-end">
+                <h6>وضعیت سفارش</h6>
+                <p>
+                    <span class="badge
+                        {% if invoice.order.status == 'paid' %}badge-light-success
+                        {% elif invoice.order.status == 'pending' %}badge-light-warning
+                        {% elif invoice.order.status == 'shipped' %}badge-light-info
+                        {% elif invoice.order.status == 'delivered' %}badge-light-primary
+                        {% elif invoice.order.status == 'cancelled' %}badge-light-danger
+                        {% else %}badge-light-secondary{% endif %}">
+                        {{ invoice.order.get_status_display }}
+                    </span>
+                </p>
+                <p class="mb-0 f-light">روش پرداخت: {{ invoice.order.payment_method }}</p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ردیف</th>
+                        <th>محصول</th>
+                        <th>قیمت واحد</th>
+                        <th>تعداد</th>
+                        <th>جمع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in invoice.order.items.all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                            {% if item.product %}
+                                {{ item.product.name }}
+                            {% else %}
+                                محصول حذف شده
+                            {% endif %}
+                        </td>
+                        <td>{{ item.price|intcomma }} ت</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="font-primary f-w-600">{{ item.get_total|intcomma }} ت</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end f-w-600">جمع کل:</td>
+                        <td class="font-primary f-w-600">{{ invoice.order.total_price|intcomma }} ت</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {% if invoice.notes %}
+        <div class="alert alert-light mt-3">
+            <strong>یادداشت:</strong> {{ invoice.notes }}
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="text-end mt-4">
+            <button class="btn btn-primary" onclick="window.print()">
+                <i data-feather="printer" class="me-1"></i> پرینت فاکتور
+            </button>
+            <a href="{% url 'ecommerce:order_detail' invoice.order.pk %}" class="btn btn-light">
+                بازگشت به سفارش
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

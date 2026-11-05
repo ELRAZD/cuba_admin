@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}نمایه کاربر | کوبا{% endblock %}
+{% block page_title %}نمایه کاربر{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">کاربران</li>
+    <li class="breadcrumb-item active">نمایه</li>
+{% endblock %}
+
+{% block content %}
+<div class="user-profile">
+    <div class="row">
+        <!-- ستون کناری: کارت کاربر -->
+        <div class="col-xl-4 col-lg-12 col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <div class="media media-wrapper justify-content-between">
+                        <div class="media-body">
+                            <div class="user-image">
+                                <div class="avatar"><img alt="user" src="{{ profile_user.get_avatar_url }}" id="profile-avatar"></div>
+                            </div>
+                            <div class="user-content">
+                                <h5 class="text-center">{{ profile_user.full_name|default:profile_user.username }}</h5>
+                                <p class="text-center">{{ profile_user.bio|default:"بیوگرافی وارد نشده است." }}</p>
+                            </div>
+                            <div class="social-media">
+                                <ul class="list-inline">
+                                    {% if profile_user.website %}
+                                        <li class="list-inline-item"><a href="{{ profile_user.website }}" target="_blank"><i class="fa fa-globe"></i></a></li>
+                                    {% endif %}
+                                    <li class="list-inline-item"><a href="mailto:{{ profile_user.email }}"><i class="fa fa-envelope"></i></a></li>
+                                    <li class="list-inline-item"><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li class="list-inline-item"><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                    <li class="list-inline-item"><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="follow text-center mt-3">
+                        <div class="row">
+                            <div class="col-4 border-right">
+                                <span>فالووینگ</span>
+                                <div class="follow-num">236k</div>
+                            </div>
+                            <div class="col-4 border-right">
+                                <span>فالوور</span>
+                                <div class="follow-num">3691k</div>
+                            </div>
+                            <div class="col-4">
+                                <span>پست‌ها</span>
+                                <div class="follow-num">{{ total_posts|default:0 }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a class="btn btn-primary w-100" href="{% url 'accounts:edit_profile' %}">
+                            <i data-feather="edit-2" class="me-1"></i> ویرایش پروفایل
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- اطلاعات تکمیلی -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>اطلاعات شخصی</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">ایمیل:</span>
+                            <span class="font-primary">{{ profile_user.email|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">موبایل:</span>
+                            <span class="font-primary">{{ profile_user.phone|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">جنسیت:</span>
+                            <span class="font-primary">{{ profile_user.get_gender_display|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">تاریخ تولد:</span>
+                            <span class="font-primary">{{ profile_user.birth_date|date:"Y/m/d"|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">شهر:</span>
+                            <span class="font-primary">{{ profile_user.city|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">کشور:</span>
+                            <span class="font-primary">{{ profile_user.country|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">وب‌سایت:</span>
+                            {% if profile_user.website %}
+                                <a href="{{ profile_user.website }}" target="_blank" class="font-primary">مشاهده</a>
+                            {% else %}
+                                <span class="font-primary">---</span>
+                            {% endif %}
+                        </li>
+                        <li class="d-flex justify-content-between mb-2">
+                            <span class="f-light">علاقه‌مندی:</span>
+                            <span class="font-primary">{{ profile_user.interest|default:"---" }}</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span class="f-light">نقش:</span>
+                            <span class="badge badge-light-primary">{{ profile_user.get_role_display }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون اصلی: تب‌ها -->
+        <div class="col-xl-8 col-lg-12 col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <h5>درباره من</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ profile_user.bio|default:"اطلاعاتی وارد نشده است." }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>تاریخچه فعالیت</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="d-flex mb-3">
+                            <div class="activity-dot-primary me-2"></div>
+                            <div>
+                                <h6 class="mb-0">عضویت در سایت</h6>
+                                <small class="f-light">{{ profile_user.date_joined|date:"Y/m/d H:i" }}</small>
+                            </div>
+                        </li>
+                        <li class="d-flex mb-3">
+                            <div class="activity-dot-success me-2"></div>
+                            <div>
+                                <h6 class="mb-0">آخرین ورود</h6>
+                                <small class="f-light">{{ profile_user.last_login|date:"Y/m/d H:i"|default:"---" }}</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

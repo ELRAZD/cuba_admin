@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}بورد کانبان{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>بورد کانبان</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard:index' %}">
+                <svg class="stroke-icon">
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-home"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="breadcrumb-item">برنامه‌ها</li>
+            <li class="breadcrumb-item active">بورد کانبان</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid jkanban-container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>بورد کانبان</h5>
+            <a href="{% url 'tasks:create' %}" class="btn btn-primary">
+              <i class="fa fa-plus me-1"></i> وظیفه جدید
+            </a>
+          </div>
+          <div class="card-body">
+            <div class="kanban-container row g-3">
+              {% for status_key, tasks in columns.items %}
+                <div class="col-md-3 kanban-column-wrapper">
+                  <div class="kanban-column-header">
+                    <h6 class="mb-0">
+                      {% if status_key == 'todo' %}برای انجام
+                      {% elif status_key == 'in_progress' %}در حال انجام
+                      {% elif status_key == 'review' %}بازبینی
+                      {% elif status_key == 'done' %}انجام شده
+                      {% endif %}
+                      <span class="badge badge-light-primary ms-1">{{ tasks.count }}</span>
+                    </h6>
+                  </div>
+                  <div class="kanban-cards">
+                    {% for task in tasks %}
+                      <div class="card kanban-task-card mb-2">
+                        <div class="card-body p-2">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                              <h6 class="mb-1 f-14">{{ task.title }}</h6>
+                              {% if task.project %}
+                                <p class="f-light f-12 mb-1">{{ task.project.name }}</p>
+                              {% endif %}
+                              {% if task.assignee %}
+                                <p class="f-light f-12 mb-0">
+                                  <i class="fa fa-user me-1"></i>
+                                  {{ task.assignee.get_full_name|default:task.assignee.username }}
+                                </p>
+                              {% endif %}
+                            </div>
+                            {% if task.priority == 'high' %}
+                              <span class="badge badge-light-danger">زیاد</span>
+                            {% elif task.priority == 'medium' %}
+                              <span class="badge badge-light-warning">متوسط</span>
+                            {% elif task.priority == 'low' %}
+                              <span class="badge badge-light-info">کم</span>
+                            {% endif %}
+                          </div>
+                          {% if task.due_date %}
+                            <div class="mt-1">
+                              <span class="f-light f-11">
+                                <i class="fa fa-calendar me-1"></i>{{ task.due_date }}
+                              </span>
+                            </div>
+                          {% endif %}
+                          <form method="post" action="{% url 'tasks:update_status' task.pk %}" class="mt-2">
+                            {% csrf_token %}
+                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                              <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>برای انجام</option>
+                              <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>در حال انجام</option>
+                              <option value="review" {% if task.status == 'review' %}selected{% endif %}>بازبینی</option>
+                              <option value="done" {% if task.status == 'done' %}selected{% endif %}>انجام شده</option>
+                            </select>
+                          </form>
+                        </div>
+                      </div>
+                    {% empty %}
+                      <p class="text-muted f-12 text-center mb-0">وظیفه‌ای نیست</p>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

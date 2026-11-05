@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}وظیفه جدید{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>وظیفه جدید</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard:index' %}">
+                <svg class="stroke-icon">
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-home"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="breadcrumb-item"><a href="{% url 'tasks:list' %}">وظایف</a></li>
+            <li class="breadcrumb-item active">ایجاد</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>فرم ایجاد وظیفه</h5>
+          </div>
+          <div class="card-body">
+            <form method="post" class="row g-3 needs-validation" novalidate>
+              {% csrf_token %}
+              
+              {% if form.non_field_errors %}
+                <div class="col-12">
+                  <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                  </div>
+                </div>
+              {% endif %}
+
+              <div class="col-md-12">
+                <label class="form-label" for="{{ form.title.id_for_label }}">عنوان</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                  <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-12">
+                <label class="form-label" for="{{ form.description.id_for_label }}">توضیحات</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                  <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.project.id_for_label }}">پروژه</label>
+                {{ form.project }}
+                {% if form.project.errors %}
+                  <div class="invalid-feedback d-block">{{ form.project.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.assignee.id_for_label }}">مسئول</label>
+                {{ form.assignee }}
+                {% if form.assignee.errors %}
+                  <div class="invalid-feedback d-block">{{ form.assignee.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.status.id_for_label }}">وضعیت</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                  <div class="invalid-feedback d-block">{{ form.status.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.priority.id_for_label }}">اولویت</label>
+                {{ form.priority }}
+                {% if form.priority.errors %}
+                  <div class="invalid-feedback d-block">{{ form.priority.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.due_date.id_for_label }}">مهلت</label>
+                {{ form.due_date }}
+                {% if form.due_date.errors %}
+                  <div class="invalid-feedback d-block">{{ form.due_date.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-primary" type="submit">ذخیره</button>
+                <a href="{% url 'tasks:kanban' %}" class="btn btn-light">لغو</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

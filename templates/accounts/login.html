@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <title>ورود | قالب پنل مدیریت کوبا</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        html, body { font-family: Vazirmatn, sans-serif !important; }
+    </style>
+</head>
+<body>
+<!-- loader starts-->
+<div class="loader-wrapper">
+    <div class="loader-index"> <span></span></div>
+    <svg>
+        <defs></defs>
+        <filter id="goo">
+            <fegaussianblur in="SourceGraphic" stddeviation="11" result="blur"></fegaussianblur>
+            <fecolormatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"> </fecolormatrix>
+        </filter>
+    </svg>
+</div>
+<!-- loader ends-->
+<!-- tap on top starts-->
+<div class="tap-top"><i data-feather="chevrons-up"></i></div>
+<!-- tap on tap ends-->
+<!-- page-wrapper Start-->
+<div class="page-wrapper">
+    <div class="container-fluid p-0 login-page1">
+        <div class="row m-0">
+            <div class="col-xl-7 p-0 order-xl-1 order-2">
+                <div class="login-bg-img">
+                    <img class="bg-img-cover bg-center" src="{% static 'assets/images/login/2.jpg' %}" alt="looginpage">
+                </div>
+            </div>
+            <div class="col-xl-5 p-0 order-xl-2 order-1">
+                <div class="login-card login-dark">
+                    <div>
+                        <div>
+                            <a class="logo text-start" href="{% url 'dashboard:index' %}">
+                                <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt="looginpage">
+                                <img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt="looginpage">
+                            </a>
+                        </div>
+                        <div class="login-main">
+                            <form class="theme-form" method="post" action="{% url 'accounts:login' %}">
+                                {% csrf_token %}
+                                <h4>ورود به حساب کاربری</h4>
+                                <p>نام کاربری و رمز عبور خود را وارد کنید</p>
+
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+                                    {% endfor %}
+                                {% endif %}
+
+                                <div class="form-group">
+                                    <label class="col-form-label">نام کاربری</label>
+                                    <input class="form-control" type="text" name="username" id="username"
+                                           placeholder="نام کاربری" value="{{ form.username.value|default:'' }}" required autofocus>
+                                    {% if form.username.errors %}
+                                        <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">رمز عبور</label>
+                                    <div class="form-input position-relative">
+                                        <input class="form-control" type="password" name="password" id="password"
+                                               placeholder="رمز عبور" required>
+                                        <div class="show-hide"><span class="show"></span></div>
+                                    </div>
+                                    {% if form.password.errors %}
+                                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <div class="checkbox p-0">
+                                        <input id="checkbox1" type="checkbox" name="remember_me">
+                                        <label class="text-muted" for="checkbox1">مرا به خاطر بسپار</label>
+                                    </div>
+                                    <a class="link" href="{% url 'accounts:register' %}">فراموشی رمز؟</a>
+                                    <div class="text-end mt-3">
+                                        <button class="btn btn-primary btn-block w-100" type="submit">ورود</button>
+                                    </div>
+                                </div>
+
+                                <h6 class="text-muted mt-4 or">یا ورود با</h6>
+                                <div class="social mt-4">
+                                    <div class="btn-showcase">
+                                        <a class="btn btn-light" href="#" type="submit">
+                                            <i class="txt-linkedin" data-feather="linkedin"></i> LinkedIn
+                                        </a>
+                                        <a class="btn btn-light" href="#" type="submit">
+                                            <i class="txt-twitter" data-feather="twitter"></i> Twitter
+                                        </a>
+                                        <a class="btn btn-light" href="#" type="submit">
+                                            <i class="txt-fb" data-feather="facebook"></i> Facebook
+                                        </a>
+                                    </div>
+                                </div>
+                                <p class="mt-4 mb-0 text-center">
+                                    حساب کاربری ندارید؟
+                                    <a class="ms-2" href="{% url 'accounts:register' %}">ثبت‌نام کنید</a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+<script src="{% static 'assets/js/config.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+<script>
+    // toggle password visibility
+    document.querySelector('.show-hide').addEventListener('click', function () {
+        var pwd = document.getElementById('password');
+        if (pwd.type === 'password') { pwd.type = 'text'; this.classList.add('show'); }
+        else { pwd.type = 'password'; this.classList.remove('show'); }
+    });
+</script>
+</body>
+</html>

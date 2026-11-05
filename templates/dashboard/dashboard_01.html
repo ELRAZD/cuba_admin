@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد پیش‌فرض | کوبا{% endblock %}
+{% block page_title %}پیش‌فرض{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">پیش‌فرض</li>
+{% endblock %}
+
+{% block content %}
+<div class="row widget-grid">
+
+    <!-- Welcome -->
+    <div class="col-xxl-4 col-sm-6 box-col-6">
+        <div class="card profile-box">
+            <div class="card-body">
+                <div class="media media-wrapper justify-content-between">
+                    <div class="media-body">
+                        <div class="greeting-user">
+                            <h4 class="f-w-600">به کوبا خوش آمدید {{ user.full_name|default:user.username }}</h4>
+                            <p>اینکه امروز در حساب شما چه اتفاقی می‌افتد</p>
+                            <div class="whatsnew-btn">
+                                <a class="btn btn-outline-white" href="{% url 'ecommerce:products' %}">چیزهای جدید!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="clockbox">
+                            <svg id="clock" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+                                <g id="face">
+                                    <circle class="circle" cx="300" cy="300" r="253.9"></circle>
+                                    <path class="hour-marks" d="M300.5 94V61M506 300.5h32M300.5 506v33M94 300.5H60M411.3 107.8l7.9-13.8M493 190.2l13-7.4M492.1 411.4l16.5 9.5M411 492.3l8.9 15.3M189 492.3l-9.2 15.9M107.7 411L93 419.5M107.5 189.3l-17.1-9.9M188.1 108.2l-9-15.6"></path>
+                                    <circle class="mid-circle" cx="300" cy="300" r="16.2"></circle>
+                                </g>
+                                <g id="hour"><path class="hour-hand" d="M300.5 298V142"></path></g>
+                                <g id="minute"><path class="minute-hand" d="M300.5 298V67"></path></g>
+                                <g id="second"><path class="second-hand" d="M300.5 350V55"></path></g>
+                            </svg>
+                        </div>
+                        <div class="badge f-10 p-0" id="txt"></div>
+                    </div>
+                </div>
+                <div class="cartoon">
+                    <img class="img-fluid" src="{% static 'assets/images/dashboard/cartoon.svg' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widgets: Orders / Products -->
+    <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card widget-1">
+                    <div class="card-body">
+                        <div class="widget-content">
+                            <div class="widget-round secondary">
+                                <div class="bg-round">
+                                    <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#cart"></use></svg>
+                                    <svg class="half-circle svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#halfcircle"></use></svg>
+                                </div>
+                            </div>
+                            <div><h4>{{ total_orders|default:0|intcomma }}</h4><span class="f-light">سفارش</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div class="card widget-1">
+                        <div class="card-body">
+                            <div class="widget-content">
+                                <div class="widget-round primary">
+                                    <div class="bg-round">
+                                        <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#tag"></use></svg>
+                                    </div>
+                                </div>
+                                <div><h4>{{ total_products|default:0|intcomma }}</h4><span class="f-light">محصول</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Widgets: Users / Posts -->
+    <div class="col-xxl-auto col-xl-3 col-sm-6 box-col-6">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card widget-1">
+                    <div class="card-body">
+                        <div class="widget-content">
+                            <div class="widget-round warning">
+                                <div class="bg-round">
+                                    <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#return-box"></use></svg>
+                                </div>
+                            </div>
+                            <div><h4>{{ total_users|default:0|intcomma }}</h4><span class="f-light">کاربر</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div class="card widget-1">
+                        <div class="card-body">
+                            <div class="widget-content">
+                                <div class="widget-round success">
+                                    <div class="bg-round">
+                                        <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#rate"></use></svg>
+                                    </div>
+                                </div>
+                                <div><h4>{{ total_posts|default:0|intcomma }}</h4><span class="f-light">پست</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="col-xxl-auto col-xl-12 col-sm-6 box-col-6">
+        <div class="row">
+            <div class="col-xxl-12 col-xl-6">
+                <div class="card widget-1 widget-with-chart">
+                    <div class="card-body">
+                        <div><h4 class="mb-1">{{ total_orders|default:0|intcomma }}</h4><span class="f-light">سفارشات</span></div>
+                        <div class="order-chart"><div id="orderchart"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-12 col-xl-6">
+                <div class="card widget-1 widget-with-chart">
+                    <div class="card-body">
+                        <div><h4 class="mb-1">{{ monthly_sales|default:0|intcomma }}</h4><span class="f-light">فروش ماهانه</span></div>
+                        <div class="profit-chart"><div id="profitchart"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Balance -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>تعادل کلی</h5></div>
+            <div class="card-body pt-0">
+                <div class="row m-0 overall-card">
+                    <div class="col-xl-9">
+                        <ul class="balance-data">
+                            <li><span class="circle bg-warning"></span><span class="f-light ms-1">درآمد</span></li>
+                            <li><span class="circle bg-primary"></span><span class="f-light ms-1">هزینه</span></li>
+                        </ul>
+                        <div class="current-sale-container"><div id="chart-currently"></div></div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="row g-sm-4 g-2">
+                            <div class="col-xl-12">
+                                <div class="light-card balance-card">
+                                    <div class="svg-box"><svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#income"></use></svg></div>
+                                    <div><span class="f-light">درآمد</span><h6 class="mt-1 mb-0">{{ monthly_sales|default:0|intcomma }}</h6></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="light-card balance-card">
+                                    <div class="svg-box"><svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#expense"></use></svg></div>
+                                    <div><span class="f-light">هزینه</span><h6 class="mt-1 mb-0">---</h6></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="light-card balance-card">
+                                    <div class="svg-box"><svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#doller-return"></use></svg></div>
+                                    <div><span class="f-light">وظایف در انتظار</span><h6 class="mt-1 mb-0">{{ pending_tasks|default:0 }}</h6></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="col-xxl-4 col-md-6">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">سفارشات اخیر</h5>
+                <a class="f-light" href="{% url 'ecommerce:order_history' %}">همه</a>
+            </div>
+            <div class="card-body pt-0">
+                <table class="table table-bordernone">
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td><img class="img-fluid img-40 rounded-circle" src="{{ order.user.get_avatar_url }}" alt=""></td>
+                            <td class="img-content-box">
+                                <a class="d-block f-w-500" href="{% url 'ecommerce:order_detail' order.pk %}">{{ order.full_name }}</a>
+                                <span class="f-light">{{ order.created_at|timesince }} پیش</span>
+                            </td>
+                            <td class="text-end"><p class="m-0 font-success">{{ order.total_price|intcomma }} T</p></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center f-light">سفارشی موجود نیست.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="col-xxl-4 col-md-6">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">کاربران اخیر</h5>
+                <a class="f-light" href="{% url 'accounts:user_cards' %}">همه</a>
+            </div>
+            <div class="card-body pt-0">
+                <ul class="list-unstyled">
+                    {% for u in recent_users %}
+                    <li class="mb-3">
+                        <div class="media">
+                            <img class="img-40 rounded-circle me-2" src="{{ u.get_avatar_url }}" alt="">
+                            <div class="media-body">
+                                <h6 class="mb-0">{{ u.full_name }}</h6>
+                                <span class="f-light">{{ u.date_joined|timesince }} پیش</span>
+                            </div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="text-center f-light">کاربری موجود نیست.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/clock.js' %}"></script>
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+<script src="{% static 'assets/js/chart/apex-chart/moment.min.js' %}"></script>
+<script src="{% static 'assets/js/dashboard/default.js' %}"></script>
+{% endblock %}

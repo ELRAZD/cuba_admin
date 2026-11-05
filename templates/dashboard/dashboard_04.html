@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد کریپتو | کوبا{% endblock %}
+{% block page_title %}کریپتوکارنسی{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">کریپتوکارنسی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Portfolio Value -->
+    <div class="col-xxl-6 col-md-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <span class="f-light text-white-50">ارزش کل پرتفوی</span>
+                <h2 class="my-2 text-white">${{ crypto_stats.portfolio_value|floatformat:2|intcomma }}</h2>
+                <span class="d-flex align-items-center">
+                    <i data-feather="trending-up" class="me-1"></i>
+                    <span>+{{ crypto_stats.daily_change }}% امروز</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- BTC -->
+    <div class="col-xxl-2 col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <span class="badge badge-light-warning mb-2">BTC</span>
+                <h4 class="mb-0">${{ crypto_stats.btc_price|floatformat:2|intcomma }}</h4>
+                <small class="font-success">+2.4%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ETH -->
+    <div class="col-xxl-2 col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <span class="badge badge-light-primary mb-2">ETH</span>
+                <h4 class="mb-0">${{ crypto_stats.eth_price|floatformat:2|intcomma }}</h4>
+                <small class="font-danger">-1.2%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- USDT -->
+    <div class="col-xxl-2 col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <span class="badge badge-light-success mb-2">USDT</span>
+                <h4 class="mb-0">${{ crypto_stats.usdt_price|floatformat:2 }}</h4>
+                <small class="font-success">+0.01%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Big Chart -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">نمودار قیمت</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">BTC/USD</button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">BTC/USD</a>
+                        <a class="dropdown-item" href="#">ETH/USD</a>
+                        <a class="dropdown-item" href="#">USDT/USD</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pt-0"><div id="crypto-chart"></div></div>
+        </div>
+    </div>
+
+    <!-- Portfolio Breakdown -->
+    <div class="col-xxl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>پرتفوی</h5></div>
+            <div class="card-body pt-0">
+                <div id="crypto-pie"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>تراکنش‌های اخیر</h5></div>
+            <div class="card-body pt-0">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ارز</th>
+                                <th>نوع</th>
+                                <th>مقدار</th>
+                                <th>قیمت</th>
+                                <th>تاریخ</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in "12345" %}
+                            <tr>
+                                <td><span class="badge badge-light-warning">BTC</span></td>
+                                <td class="font-success">خرید</td>
+                                <td>0.0{{ forloop.counter }}5</td>
+                                <td>$2,2{{ forloop.counter }}0.00</td>
+                                <td>1403/01/{{ forloop.counter }}5</td>
+                                <td><span class="badge badge-light-success">تأیید شده</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script src="{% static 'assets/js/chart/apex-chart/stock-prices.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) return;
+
+        var priceEl = document.querySelector("#crypto-chart");
+        if (priceEl) {
+            new ApexCharts(priceEl, {
+                chart: { type: 'candlestick', height: 350 },
+                series: [{
+                    data: [
+                        { x: new Date(2024, 0, 1), y: [43250, 44100, 42800, 43500] },
+                        { x: new Date(2024, 0, 2), y: [43500, 44200, 43100, 44000] },
+                        { x: new Date(2024, 0, 3), y: [44000, 44800, 43700, 44500] },
+                        { x: new Date(2024, 0, 4), y: [44500, 45200, 44100, 45000] },
+                        { x: new Date(2024, 0, 5), y: [45000, 45500, 44600, 45300] },
+                    ]
+                }],
+                colors: ['#7366ff'],
+            }).render();
+        }
+
+        var pieEl = document.querySelector("#crypto-pie");
+        if (pieEl) {
+            new ApexCharts(pieEl, {
+                chart: { type: 'donut', height: 300 },
+                series: [45, 25, 20, 10],
+                labels: ['BTC', 'ETH', 'USDT', 'سایر'],
+                colors: ['#ffa200', '#7366ff', '#28a745', '#dc3545'],
+            }).render();
+        }
+    });
+</script>
+{% endblock %}

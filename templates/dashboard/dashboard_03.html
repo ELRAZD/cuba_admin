@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد دوره آنلاین | کوبا{% endblock %}
+{% block page_title %}دوره آنلاین{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">دوره آنلاین</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Statistics Cards -->
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round primary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#user"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ course_stats.total_students|intcomma }}</h4>
+                        <span class="f-light">دانش‌آموزان</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round secondary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#learning"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ course_stats.total_courses }}</h4>
+                        <span class="f-light">دوره‌ها</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round success">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#check-circle"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ course_stats.completed_courses }}</h4>
+                        <span class="f-light">تکمیل شده</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round warning">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#clock"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ course_stats.in_progress }}</h4>
+                        <span class="f-light">در حال یادگیری</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Chart -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>پیشرفت دوره‌ها</h5></div>
+            <div class="card-body pt-0">
+                <div id="course-progress-chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Students -->
+    <div class="col-xxl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">دانش‌آموزان اخیر</h5>
+                <a class="f-light" href="{% url 'accounts:user_cards' %}">همه</a>
+            </div>
+            <div class="card-body pt-0">
+                <ul class="list-unstyled">
+                    {% for u in recent_students %}
+                    <li class="mb-3">
+                        <div class="media">
+                            <img class="img-40 rounded-circle me-2" src="{{ u.get_avatar_url }}" alt="">
+                            <div class="media-body">
+                                <h6 class="mb-0">{{ u.full_name }}</h6>
+                                <span class="f-light">{{ u.date_joined|timesince }} پیش</span>
+                            </div>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="text-center f-light">دانش‌آموزی موجود نیست.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Cards -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>دوره‌های فعال</h5></div>
+            <div class="card-body pt-0">
+                <div class="row g-3">
+                    {% for i in "1234" %}
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-primary p-2 rounded me-2">
+                                        <i data-feather="book" style="width:20px;height:20px;color:#fff;"></i>
+                                    </div>
+                                    <h6 class="m-0">دوره {{ forloop.counter }}</h6>
+                                </div>
+                                <p class="f-light small mb-2">توضیح کوتاه دوره آموزشی</p>
+                                <div class="progress" style="height:6px;">
+                                    <div class="progress-bar bg-primary" style="width:{{ forloop.counter }}5%;"></div>
+                                </div>
+                                <p class="f-light small mt-2 mb-0">{{ forloop.counter }}5% تکمیل</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.querySelector("#course-progress-chart");
+        if (el && window.ApexCharts) {
+            new ApexCharts(el, {
+                chart: { type: 'area', height: 320 },
+                series: [{ name: 'ثبت‌نام', data: [30, 45, 60, 55, 70, 65, 80, 85, 75, 90, 95, 100] }],
+                xaxis: { categories: ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'] },
+                colors: ['#7366ff'],
+            }).render();
+        }
+    });
+</script>
+{% endblock %}

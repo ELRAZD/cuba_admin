@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}سبد خرید | کوبا{% endblock %}
+{% block page_title %}سبد خرید{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item active">سبد خرید</li>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h5>سبد خرید</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="order-history table-responsive wishlist">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>محصول</th>
+                            <th>نام محصول</th>
+                            <th>قیمت</th>
+                            <th>تعداد</th>
+                            <th>عملیات</th>
+                            <th>مجموع</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td>
+                                    <img class="img-fluid img-40" src="{{ item.product.image.url }}"
+                                         alt="{{ item.product.name }}">
+                                </td>
+                                <td>
+                                    <div class="product-name">
+                                        <a href="{% url 'ecommerce:product_detail' item.product.slug %}">
+                                            {{ item.product.name }}
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ item.product.get_price|intcomma }} ت</td>
+                                <td>
+                                    <fieldset class="qty-box">
+                                        <div class="input-group">
+                                            <input class="touchspin text-center" type="text"
+                                                   value="{{ item.quantity }}">
+                                        </div>
+                                    </fieldset>
+                                </td>
+                                <td>
+                                    <form method="post"
+                                          action="{% url 'ecommerce:cart_remove' item.id %}"
+                                          style="display:inline;">
+
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="btn btn-link text-danger p-0">
+
+                                            <i data-feather="x-circle"></i>
+
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="font-primary f-w-600">{{ item.get_total|intcomma }} ت</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i data-feather="shopping-cart" style="width:48px;height:48px;color:#ccc;"></i>
+                                    <p class="f-light mt-2 mb-0">سبد خرید شما خالی است.</p>
+                                    <a href="{% url 'ecommerce:products' %}" class="btn btn-primary btn-sm mt-2">
+                                        رفتن به فروشگاه
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        {% if items %}
+                            <tr>
+                                <td colspan="4">
+                                    <div class="input-group">
+                                        <input class="form-control me-2" type="text"
+                                               placeholder="کد تخفیف را وارد کنید">
+                                        <a class="btn btn-primary" href="#">تایید</a>
+                                    </div>
+                                </td>
+                                <td class="total-amount">
+                                    <h6 class="m-0 text-end"><span class="f-w-600">قیمت کل:</span></h6>
+                                </td>
+                                <td><span class="font-primary f-w-600">{{ total|intcomma }} ت</span></td>
+                            </tr>
+                            <tr>
+                                <td class="text-end" colspan="5">
+                                    <a class="btn btn-secondary cart-btn-transform"
+                                       href="{% url 'ecommerce:products' %}">
+                                        ادامه خرید
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-success cart-btn-transform" href="{% url 'ecommerce:checkout' %}">
+                                        تسویه حساب
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'assets/js/touchspin/vendors.min.js' %}"></script>
+    <script src="{% static 'assets/js/touchspin/touchspin.js' %}"></script>
+    <script src="{% static 'assets/js/touchspin/input-groups.min.js' %}"></script>
+{% endblock %}

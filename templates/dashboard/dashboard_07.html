@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد مدرسه | کوبا{% endblock %}
+{% block page_title %}مدیریت مدرسه{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">مدیریت مدرسه</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Stats -->
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round primary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#user"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ school_stats.total_students|intcomma }}</h4><span class="f-light">دانش‌آموزان</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round success">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#user"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ school_stats.total_teachers }}</h4><span class="f-light">معلمان</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round warning">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#learning"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ school_stats.total_classes }}</h4><span class="f-light">کلاس‌ها</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round secondary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#check-circle"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ school_stats.attendance_rate }}%</h4><span class="f-light">حضور و غیاب</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Chart -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>نمودار حضور و غیاب</h5></div>
+            <div class="card-body pt-0"><div id="attendance-chart"></div></div>
+        </div>
+    </div>
+
+    <div class="col-xxl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>توزیع دانش‌آموزان</h5></div>
+            <div class="card-body pt-0"><div id="grade-pie"></div></div>
+        </div>
+    </div>
+
+    <!-- Recent Students -->
+    <div class="col-xxl-6 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">دانش‌آموزان اخیر</h5>
+                <a class="f-light" href="{% url 'accounts:user_cards' %}">همه</a>
+            </div>
+            <div class="card-body pt-0">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>پایه</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in recent_students %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img class="img-30 rounded-circle me-2" src="{{ u.get_avatar_url }}" alt="">
+                                    <span>{{ u.full_name }}</span>
+                                </div>
+                            </td>
+                            <td>پایه {{ forloop.counter|add:5 }}</td>
+                            <td><span class="badge badge-light-success">فعال</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center f-light">دانش‌آموزی موجود نیست.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classes -->
+    <div class="col-xxl-6 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>کلاس‌های امروز</h5></div>
+            <div class="card-body pt-0">
+                <ul class="list-unstyled">
+                    {% for i in "1234" %}
+                    <li class="d-flex align-items-center mb-3 p-3 bg-light rounded">
+                        <div class="bg-primary p-2 rounded me-3">
+                            <i data-feather="clock" style="width:20px;height:20px;color:#fff;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">ریاضیات - پایه {{ forloop.counter|add:6 }}</h6>
+                            <small class="f-light">کلاس {{ forloop.counter }}0{{ forloop.counter }}</small>
+                        </div>
+                        <span class="badge badge-light-primary">{{ forloop.counter }}0:00</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) return;
+
+        var chartEl = document.querySelector("#attendance-chart");
+        if (chartEl) {
+            new ApexCharts(chartEl, {
+                chart: { type: 'bar', height: 320 },
+                series: [
+                    { name: 'حاضر', data: [28, 30, 27, 29, 31, 26, 30] },
+                    { name: 'غایب', data: [2, 0, 3, 1, 0, 4, 0] },
+                ],
+                colors: ['#28a745', '#dc3545'],
+                xaxis: { categories: ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'] },
+            }).render();
+        }
+
+        var pieEl = document.querySelector("#grade-pie");
+        if (pieEl) {
+            new ApexCharts(pieEl, {
+                chart: { type: 'donut', height: 300 },
+                series: [25, 22, 20, 18, 15],
+                labels: ['پایه ۷', 'پایه ۸', 'پایه ۹', 'پایه ۱۰', 'پایه ۱۱'],
+                colors: ['#7366ff', '#ffa200', '#28a745', '#17a2b8', '#dc3545'],
+            }).render();
+        }
+    });
+</script>
+{% endblock %}

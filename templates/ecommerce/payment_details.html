@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}جزئیات سفارش #{{ order.pk }} | کوبا{% endblock %}
+{% block page_title %}سفارش #{{ order.pk }}{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'ecommerce:order_history' %}">سابقه سفارش</a></li>
+    <li class="breadcrumb-item active">#{{ order.pk }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- اطلاعات گیرنده -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5>اطلاعات گیرنده</h5></div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><strong>نام:</strong> {{ order.full_name }}</li>
+                    <li class="mb-2"><strong>ایمیل:</strong> {{ order.email }}</li>
+                    <li class="mb-2"><strong>تلفن:</strong> {{ order.phone }}</li>
+                    <li class="mb-2"><strong>شهر:</strong> {{ order.city }}</li>
+                    <li class="mb-2"><strong>کد پستی:</strong> {{ order.postal_code|default:"---" }}</li>
+                    <li class="mb-2"><strong>آدرس:</strong> {{ order.address }}</li>
+                    <li class="mb-2">
+                        <strong>وضعیت:</strong>
+                        <span class="badge
+                            {% if order.status == 'paid' %}badge-light-success
+                            {% elif order.status == 'pending' %}badge-light-warning
+                            {% elif order.status == 'shipped' %}badge-light-info
+                            {% elif order.status == 'delivered' %}badge-light-primary
+                            {% elif order.status == 'cancelled' %}badge-light-danger
+                            {% else %}badge-light-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </li>
+                    <li class="mb-2"><strong>روش پرداخت:</strong> {{ order.payment_method }}</li>
+                    <li class="mb-2"><strong>تاریخ سفارش:</strong> {{ order.created_at|date:"Y/m/d H:i" }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- آیتم‌های سفارش -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5>آیتم‌های سفارش</h5></div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for item in order.items.all %}
+                    <li class="d-flex justify-content-between mb-2">
+                        <span>
+                            {% if item.product %}
+                                <a href="{% url 'ecommerce:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                            {% else %}
+                                محصول حذف شده
+                            {% endif %}
+                            × {{ item.quantity }}
+                        </span>
+                        <span class="font-primary">{{ item.get_total|intcomma }} ت</span>
+                    </li>
+                    {% endfor %}
+                    <li class="border-top pt-2 d-flex justify-content-between">
+                        <strong>مجموع:</strong>
+                        <strong class="font-primary">{{ order.total_price|intcomma }} ت</strong>
+                    </li>
+                </ul>
+                {% if order.invoice %}
+                <div class="text-end mt-3">
+                    <a class="btn btn-primary" href="{% url 'ecommerce:invoice_detail' order.invoice.invoice_number %}">
+                        مشاهده فاکتور
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

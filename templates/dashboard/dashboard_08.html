@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد POS | کوبا{% endblock %}
+{% block page_title %}POS - نقطه فروش{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">POS</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Today Stats -->
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round primary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#cart"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ pos_stats.today_orders|intcomma }}</h4>
+                        <span class="f-light">فروش امروز</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round success">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#doller-return"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ pos_stats.today_sales|intcomma }} T</h4>
+                        <span class="f-light">درآمد امروز</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round warning">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#tag"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ pos_stats.products_in_stock|intcomma }}</h4>
+                        <span class="f-light">محصول موجود</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round secondary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#rate"></use></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>{{ pos_stats.avg_order|intcomma }} T</h4>
+                        <span class="f-light">میانگین سبد</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS Terminal -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">محصولات</h5>
+                <form class="d-flex" style="max-width:300px;">
+                    <input class="form-control form-control-sm me-2" type="search" placeholder="جستجوی محصول...">
+                    <button class="btn btn-sm btn-primary">جستجو</button>
+                </form>
+            </div>
+            <div class="card-body pt-0">
+                <div class="row g-2">
+                    {% for i in "123456789" %}
+                    <div class="col-xl-3 col-md-4 col-6">
+                        <div class="card border mb-0 cursor-pointer">
+                            <div class="card-body text-center p-2">
+                                <div class="bg-light rounded mb-2 d-flex align-items-center justify-content-center" style="height:80px;">
+                                    <i data-feather="package" style="width:32px;height:32px;color:#7366ff;"></i>
+                                </div>
+                                <small class="d-block">محصول {{ forloop.counter }}</small>
+                                <small class="font-primary f-w-600">{{ forloop.counter }}5,000 T</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Panel -->
+    <div class="col-xxl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>سبد فروش</h5></div>
+            <div class="card-body pt-0">
+                <ul class="list-unstyled mb-3" style="max-height:300px;overflow-y:auto;">
+                    {% for i in "12" %}
+                    <li class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                        <div>
+                            <small class="d-block">محصول {{ forloop.counter }}</small>
+                            <small class="f-light">۱ × {{ forloop.counter }}5,000</small>
+                        </div>
+                        <span class="font-primary f-w-600">{{ forloop.counter }}5,000 T</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>جمع:</span>
+                    <strong>30,000 T</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>تخفیف:</span>
+                    <span class="font-danger">0 T</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2 mb-3">
+                    <strong>مبلغ نهایی:</strong>
+                    <strong class="font-success">30,000 T</strong>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success">پرداخت نقدی</button>
+                    <button class="btn btn-primary">پرداخت کارتی</button>
+                    <button class="btn btn-outline-danger btn-sm">لغو سبد</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Sales -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>فروش‌های اخیر</h5></div>
+            <div class="card-body pt-0">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>شماره سفارش</th>
+                                <th>زمان</th>
+                                <th>تعداد آیتم</th>
+                                <th>مبلغ</th>
+                                <th>روش پرداخت</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in "123456" %}
+                            <tr>
+                                <td>#POS-{{ forloop.counter }}0{{ forloop.counter }}</td>
+                                <td>{{ forloop.counter }}:2{{ forloop.counter }}</td>
+                                <td>{{ forloop.counter }} آیتم</td>
+                                <td class="font-primary f-w-600">{{ forloop.counter }}5,000 T</td>
+                                <td>نقدی</td>
+                                <td><span class="badge badge-light-success">تکمیل شده</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}افزودن پست | کوبا{% endblock %}
+{% block page_title %}افزودن پست{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'blog:list' %}">وبلاگ</a></li>
+    <li class="breadcrumb-item active">افزودن پست</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>ویرایش پست</h5>
+            </div>
+            <div class="card-body add-post">
+                <form class="row needs-validation" method="post" action="{% url 'blog:add_post' %}"
+                      enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger col-12" role="alert">
+                            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} col-12" role="alert">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="col-sm-12">
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="id_title">عنوان:</label>
+                            <input class="form-control" id="id_title" type="text" name="title"
+                                   placeholder="عنوان پست" required
+                                   value="{{ form.title.value|default:'' }}">
+                            {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label for="id_category">دسته‌بندی:</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label>وضعیت:</label>
+                            <div class="m-checkbox-inline">
+                                <label for="status_draft">
+                                    <input class="radio_animated" id="status_draft" type="radio"
+                                           name="status" value="draft"
+                                           {% if form.status.value == 'draft' or not form.status.value %}checked{% endif %}> پیش‌نویس
+                                </label>
+                                <label for="status_published">
+                                    <input class="radio_animated" id="status_published" type="radio"
+                                           name="status" value="published"
+                                           {% if form.status.value == 'published' %}checked{% endif %}> منتشر شده
+                                </label>
+                            </div>
+                            {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="mb-3">
+                            <label for="id_summary">خلاصه:</label>
+                            {{ form.summary }}
+                            {% if form.summary.errors %}<div class="text-danger small">{{ form.summary.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mb-3">
+                            <label for="id_tags">برچسب‌ها:</label>
+                            {{ form.tags }}
+                            <small class="f-light d-block">با کاما جدا کنید (مثال: django, python, وب)</small>
+                            {% if form.tags.errors %}<div class="text-danger small">{{ form.tags.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Image -->
+                        <div class="mb-3">
+                            <label for="id_image">تصویر اصلی:</label>
+                            {{ form.image }}
+                            {% if form.image.errors %}<div class="text-danger small">{{ form.image.errors.0 }}</div>{% endif %}
+                        </div>
+
+                        <!-- Content (CKEditor) -->
+                        <div class="email-wrapper">
+                            <div class="theme-form">
+                                <div class="mb-3">
+                                    <label class="w-100">محتوا:</label>
+                                    <div class="toolbar-box">
+                                        {{ form.content }}
+                                    </div>
+                                    {% if form.content.errors %}<div class="text-danger small">{{ form.content.errors.0 }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-showcase text-end mt-3">
+                        <button class="btn btn-primary" type="submit">ارسال</button>
+                        <a class="btn btn-light" href="{% url 'blog:list' %}">انصراف</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- CKEditor -->
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<script>
+    if (typeof ClassicEditor !== 'undefined') {
+        document.querySelectorAll('textarea[name="content"]').forEach(function (el) {
+            ClassicEditor.create(el).catch(function (error) { console.error(error); });
+        });
+    }
+</script>
+{% endblock %}

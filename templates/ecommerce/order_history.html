@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}سابقه سفارشات | کوبا{% endblock %}
+{% block page_title %}سابقه سفارشات{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item active">سابقه سفارش</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5>سفارشات من</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>شماره سفارش</th>
+                        <th>تاریخ</th>
+                        <th>وضعیت</th>
+                        <th>مبلغ کل</th>
+                        <th>روش پرداخت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td class="f-w-600">#{{ order.pk }}</td>
+                        <td>{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                        <td>
+                            <span class="badge
+                                {% if order.status == 'paid' %}badge-light-success
+                                {% elif order.status == 'pending' %}badge-light-warning
+                                {% elif order.status == 'shipped' %}badge-light-info
+                                {% elif order.status == 'delivered' %}badge-light-primary
+                                {% elif order.status == 'cancelled' %}badge-light-danger
+                                {% else %}badge-light-secondary{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="font-primary f-w-600">{{ order.total_price|intcomma }} ت</td>
+                        <td>{{ order.payment_method }}</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="{% url 'ecommerce:order_detail' order.pk %}">
+                                جزئیات
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i data-feather="file-text" style="width:48px;height:48px;color:#ccc;"></i>
+                            <p class="f-light mt-2 mb-0">سفارشی ثبت نشده است.</p>
+                            <a class="btn btn-primary btn-sm mt-2" href="{% url 'ecommerce:products' %}">
+                                رفتن به فروشگاه
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

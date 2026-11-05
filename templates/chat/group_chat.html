@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}چت گروهی{% endblock %}
+{% block page_title %}چت گروهی{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'chat:home' %}">چت</a></li>
+    <li class="breadcrumb-item active">گروهی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Groups sidebar -->
+    <div class="col-md-3 call-chat-sidebar col-sm-12">
+        <div class="card">
+            <div class="card-body chat-body">
+                <div class="chat-left-aside">
+                    <div class="media">
+                        <img class="rounded-circle user-image" src="{{ user.get_avatar_url }}" alt="">
+                        <div class="about">
+                            <div class="name f-w-600">{{ user.full_name }}</div>
+                        </div>
+                    </div>
+                    <div class="people-list" id="people-list">
+                        <ul class="list">
+                            {% for room in rooms %}
+                            <li class="clearfix">
+                                <a href="{% url 'chat:group_chat' %}?room={{ room.id }}">
+                                    <div class="about">
+                                        <div class="name">{{ room.name|default:"گروه بدون نام" }}</div>
+                                        <div class="status">{{ room.participants.count }} عضو</div>
+                                    </div>
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="text-center f-light">گروهی موجود نیست.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="col-md-9 call-chat-body">
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="chat">
+                    <div class="chat-header clearfix">
+                        {% if active_room %}
+                        <div class="about">
+                            <div class="name">{{ active_room.name|default:"گروه بدون نام" }}</div>
+                            <div class="status">{{ active_room.participants.count }} عضو</div>
+                        </div>
+                        {% else %}
+                        <div class="about"><div class="name">گروهی انتخاب نشده</div></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="chat-history chat-msg-box custom-scrollbar">
+                        <ul>
+                            {% for msg in messages %}
+                            <li {% if not forloop.first %}class="clearfix"{% endif %}>
+                                <div class="message {% if msg.sender == user %}my-message{% else %}other-message pull-right{% endif %}">
+                                    <img class="rounded-circle {% if msg.sender == user %}float-start{% else %}float-end{% endif %} chat-user-img img-30"
+                                         src="{{ msg.sender.get_avatar_url }}" alt="">
+                                    <div class="message-data {% if msg.sender == user %}text-end{% endif %}">
+                                        <span class="message-data-time">{{ msg.sender.full_name }} — {{ msg.created_at|date:"H:i" }}</span>
+                                    </div>
+                                    {{ msg.body }}
+                                </div>
+                            </li>
+                            {% empty %}
+                            <li class="text-center f-light">پیامی وجود ندارد.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% if active_room %}
+                    <div class="chat-message clearfix">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-xl-12 d-flex">
+                                    <div class="smiley-box bg-primary">
+                                        <div class="picker"><img src="{% static 'assets/images/smiley.png' %}" alt=""></div>
+                                    </div>
+                                    <div class="input-group text-box">
+                                        <input class="form-control input-txt-bx" type="text" name="body"
+                                               placeholder="پیام خود را بنویسید......" required>
+                                        <button class="input-group-text btn btn-primary" type="submit">ارسال</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

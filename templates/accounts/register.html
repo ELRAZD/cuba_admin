@@ -1,0 +1,159 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" type="image/x-icon">
+    <title>ثبت‌نام | قالب پنل مدیریت کوبا</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/icofont.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/themify.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/flag-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/feather-icon.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/vendors/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+    <link id="color" rel="stylesheet" href="{% static 'assets/css/color-1.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/responsive.css' %}">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        html, body { font-family: Vazirmatn, sans-serif !important; }
+    </style>
+</head>
+<body>
+<div class="loader-wrapper">
+    <div class="loader-index"> <span></span></div>
+    <svg>
+        <defs></defs>
+        <filter id="goo">
+            <fegaussianblur in="SourceGraphic" stddeviation="11" result="blur"></fegaussianblur>
+            <fecolormatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"> </fecolormatrix>
+        </filter>
+    </svg>
+</div>
+
+<div class="tap-top"><i data-feather="chevrons-up"></i></div>
+
+<div class="page-wrapper">
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            <div class="col-xl-7 p-0"><img class="bg-img-cover bg-center" src="{% static 'assets/images/login/2.jpg' %}" alt="looginpage"></div>
+            <div class="col-xl-5 p-0">
+                <div class="login-card">
+                    <div>
+                        <div>
+                            <a class="logo text-start" href="{% url 'dashboard:index' %}">
+                                <img class="img-fluid for-light" src="{% static 'assets/images/logo/logo.png' %}" alt="looginpage">
+                                <img class="img-fluid for-dark" src="{% static 'assets/images/logo/logo_dark.png' %}" alt="looginpage">
+                            </a>
+                        </div>
+                        <div class="login-main">
+                            <form class="theme-form" method="post" action="{% url 'accounts:register' %}">
+                                {% csrf_token %}
+                                <h4>ایجاد حساب کاربری</h4>
+                                <p>اطلاعات خود را برای ثبت‌نام وارد کنید</p>
+
+                                {% if form.non_field_errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+                                    {% endfor %}
+                                {% endif %}
+
+                                <div class="form-group">
+                                    <label class="col-form-label">نام</label>
+                                    <input class="form-control" type="text" name="first_name" id="first_name"
+                                           placeholder="نام" value="{{ form.first_name.value|default:'' }}">
+                                    {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">نام خانوادگی</label>
+                                    <input class="form-control" type="text" name="last_name" id="last_name"
+                                           placeholder="نام خانوادگی" value="{{ form.last_name.value|default:'' }}">
+                                    {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">نام کاربری</label>
+                                    <input class="form-control" type="text" name="username" id="username"
+                                           placeholder="نام کاربری" value="{{ form.username.value|default:'' }}" required>
+                                    {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">ایمیل</label>
+                                    <input class="form-control" type="email" name="email" id="email"
+                                           placeholder="name@example.com" value="{{ form.email.value|default:'' }}" required>
+                                    {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">رمز عبور</label>
+                                    <div class="form-input position-relative">
+                                        <input class="form-control" type="password" name="password1" id="password1"
+                                               placeholder="رمز عبور" required>
+                                        <div class="show-hide"><span class="show"></span></div>
+                                    </div>
+                                    {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">تکرار رمز عبور</label>
+                                    <div class="form-input position-relative">
+                                        <input class="form-control" type="password" name="password2" id="password2"
+                                               placeholder="تکرار رمز عبور" required>
+                                        <div class="show-hide"><span class="show"></span></div>
+                                    </div>
+                                    {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors.0 }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <div class="checkbox p-0">
+                                        <input id="checkbox3" type="checkbox" required>
+                                        <label class="text-muted" for="checkbox3">موافقم با <a class="d-inline-block" href="#">شرایط و قوانین</a></label>
+                                    </div>
+                                    <div class="text-end mt-3">
+                                        <button class="btn btn-primary btn-block w-100" type="submit">ثبت‌نام</button>
+                                    </div>
+                                </div>
+
+                                <p class="mt-4 mb-0 text-center">
+                                    حساب دارید؟
+                                    <a class="ms-2" href="{% url 'accounts:login' %}">وارد شوید</a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/bootstrap/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather.min.js' %}"></script>
+<script src="{% static 'assets/js/icons/feather-icon/feather-icon.js' %}"></script>
+<script src="{% static 'assets/js/config.js' %}"></script>
+<script src="{% static 'assets/js/script.js' %}"></script>
+<script>
+    document.querySelectorAll('.show-hide').forEach(function(el) {
+        el.addEventListener('click', function() {
+            var input = this.parentElement.querySelector('input');
+            if (input.type === 'password') { input.type = 'text'; this.classList.add('show'); }
+            else { input.type = 'password'; this.classList.remove('show'); }
+        });
+    });
+</script>
+</body>
+</html>

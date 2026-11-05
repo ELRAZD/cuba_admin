@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}کارت‌های کاربران | کوبا{% endblock %}
+{% block page_title %}کارت‌های کاربران{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">کاربران</li>
+    <li class="breadcrumb-item active">کارت‌ها</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for u in users %}
+    <div class="col-xl-4 col-md-6">
+        <div class="card user-card">
+            <div class="card-header-img">
+                <img class="img-fluid" src="{% static 'assets/images/user-card/1.jpg' %}" alt="card-image">
+            </div>
+            <div class="card-body">
+                <div class="media">
+                    <div class="avatar">
+                        <img class="img-80 rounded-circle" src="{{ u.get_avatar_url }}" alt="user">
+                    </div>
+                    <div class="media-body">
+                        <h5 class="mb-0">{{ u.full_name|default:u.username }}</h5>
+                        <p class="f-light">{{ u.get_role_display }}</p>
+                        <div class="social-media">
+                            <ul class="list-inline">
+                                <li class="list-inline-item"><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fa fa-instagram"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                <li class="list-inline-item"><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <p class="f-light mt-2">{{ u.bio|default:"بیوگرافی ثبت نشده است."|truncatechars:80 }}</p>
+                <div class="d-flex justify-content-between mt-3">
+                    <div class="text-center">
+                        <h6 class="mb-0">{{ u.date_joined|date:"Y" }}</h6>
+                        <small class="f-light">عضو از</small>
+                    </div>
+                    <div class="text-center">
+                        <h6 class="mb-0">{{ u.projects.count }}</h6>
+                        <small class="f-light">پروژه</small>
+                    </div>
+                    <div class="text-center">
+                        <h6 class="mb-0">{{ u.contacts.count }}</h6>
+                        <small class="f-light">مخاطب</small>
+                    </div>
+                </div>
+                <a class="btn btn-primary btn-sm w-100 mt-3" href="{% url 'accounts:profile' %}">
+                    مشاهده پروفایل
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i data-feather="users" style="width:64px;height:64px;color:#ccc;"></i>
+        <h5 class="mt-3 f-light">کاربری یافت نشد.</h5>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

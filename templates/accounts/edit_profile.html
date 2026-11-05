@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}ویرایش پروفایل | کوبا{% endblock %}
+{% block page_title %}ویرایش پروفایل{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">کاربران</li>
+    <li class="breadcrumb-item active">ویرایش</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        <div class="card">
+            <div class="card-header">
+                <h5>اطلاعات حساب</h5>
+            </div>
+            <div class="card-body">
+                <form class="row g-3 needs-validation" method="post" action="{% url 'accounts:edit_profile' %}"
+                      enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger col-12" role="alert">
+                            {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} col-12" role="alert">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- پیش‌نمایش آواتار -->
+                    <div class="col-12 text-center mb-3">
+                        <img id="avatar-preview" class="img-100 rounded-circle"
+                             src="{{ user.get_avatar_url }}" alt="avatar">
+                        <div class="mt-2">
+                            <label class="form-label" for="id_avatar">تغییر تصویر پروفایل</label>
+                            {{ form.avatar }}
+                            {% if form.avatar.errors %}<div class="text-danger small">{{ form.avatar.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_first_name">نام</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_last_name">نام خانوادگی</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_email">ایمیل</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_phone">شماره موبایل</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_gender">جنسیت</label>
+                        {{ form.gender }}
+                        {% if form.gender.errors %}<div class="text-danger small">{{ form.gender.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_birth_date">تاریخ تولد</label>
+                        {{ form.birth_date }}
+                        {% if form.birth_date.errors %}<div class="text-danger small">{{ form.birth_date.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_city">شهر</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}<div class="text-danger small">{{ form.city.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_country">کشور</label>
+                        {{ form.country }}
+                        {% if form.country.errors %}<div class="text-danger small">{{ form.country.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_website">وب‌سایت</label>
+                        {{ form.website }}
+                        {% if form.website.errors %}<div class="text-danger small">{{ form.website.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="id_interest">علاقه‌مندی</label>
+                        {{ form.interest }}
+                        {% if form.interest.errors %}<div class="text-danger small">{{ form.interest.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="id_bio">بیوگرافی</label>
+                        {{ form.bio }}
+                        {% if form.bio.errors %}<div class="text-danger small">{{ form.bio.errors.0 }}</div>{% endif %}
+                    </div>
+
+                    <div class="col-12 text-end mt-4">
+                        <button class="btn btn-primary me-2" type="submit">ذخیره تغییرات</button>
+                        <a class="btn btn-light" href="{% url 'accounts:profile' %}">لغو</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('id_avatar').addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+            document.getElementById('avatar-preview').src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+{% endblock %}

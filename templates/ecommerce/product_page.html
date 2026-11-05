@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}{{ product.name }} | کوبا{% endblock %}
+{% block page_title %}{{ product.name }}{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'ecommerce:products' %}">محصولات</a>
+    </li>
+    <li class="breadcrumb-item active">{{ product.name|truncatechars:30 }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- گالری تصاویر -->
+    <div class="col-xl-6">
+        <div class="card product-page">
+            <div class="card-body">
+                <div class="main-img">
+                    <img class="img-fluid" id="main-product-img" src="{{ product.image.url }}" alt="{{ product.name }}">
+                </div>
+                {% if product.images.all %}
+                <div class="row g-2 mt-3">
+                    <div class="col-3">
+                        <img class="img-fluid thumb-img rounded" src="{{ product.image.url }}"
+                             alt="{{ product.name }}" style="cursor:pointer;"
+                             onclick="document.getElementById('main-product-img').src=this.src;">
+                    </div>
+                    {% for img in product.images.all %}
+                    <div class="col-3">
+                        <img class="img-fluid thumb-img rounded" src="{{ img.image.url }}"
+                             alt="{{ img.alt|default:product.name }}" style="cursor:pointer;"
+                             onclick="document.getElementById('main-product-img').src=this.src;">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- اطلاعات محصول -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="product-page-details">
+                    <h4>{{ product.name }}</h4>
+                    <div class="rating mt-2">
+                        <i class="fa fa-star font-warning"></i>
+                        <i class="fa fa-star font-warning"></i>
+                        <i class="fa fa-star font-warning"></i>
+                        <i class="fa fa-star font-warning"></i>
+                        <i class="fa fa-star-o font-warning"></i>
+                        <span class="f-light ms-2">(4.5 از 5)</span>
+                    </div>
+
+                    <p class="f-light mt-3">{{ product.short_description }}</p>
+
+                    <div class="d-flex align-items-center my-3">
+                        {% if product.discount_price %}
+                            <del class="f-light me-2">{{ product.price|intcomma }} ت</del>
+                            <h3 class="font-success mb-0">{{ product.discount_price|intcomma }} ت</h3>
+                            <span class="badge badge-light-success ms-2">
+                                {{ product.price|floatformat:0 }}% تخفیف
+                            </span>
+                        {% else %}
+                            <h3 class="font-primary mb-0">{{ product.price|intcomma }} ت</h3>
+                        {% endif %}
+                    </div>
+
+                    <ul class="list-unstyled">
+                        <li class="mb-1">
+                            <strong>وضعیت موجودی:</strong>
+                            {% if product.status == 'in_stock' %}
+                                <span class="font-success">{{ product.get_status_display }} ({{ product.stock }})</span>
+                            {% elif product.status == 'preorder' %}
+                                <span class="font-warning">{{ product.get_status_display }}</span>
+                            {% else %}
+                                <span class="font-danger">{{ product.get_status_display }}</span>
+                            {% endif %}
+                        </li>
+                        <li class="mb-1"><strong>کد محصول:</strong> {{ product.sku|default:"---" }}</li>
+                        <li class="mb-1"><strong>دسته:</strong> {{ product.category.name|default:"---" }}</li>
+                    </ul>
+
+                    <form action="{% url 'ecommerce:cart_add' product.id %}" method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="row g-2 align-items-center">
+                            <div class="col-sm-4">
+                                <label class="form-label">تعداد</label>
+                                <div class="input-group">
+                                    <button class="btn btn-light quantity-left-minus" type="button">-</button>
+                                    <input class="form-control text-center quantity-field" type="number"
+                                           name="quantity" value="1" min="1" max="{{ product.stock|default:99 }}">
+                                    <button class="btn btn-light quantity-right-plus" type="button">+</button>
+                                </div>
+                            </div>
+                            <div class="col-sm-8">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i data-feather="shopping-cart" class="me-1"></i>
+                                    افزودن به سبد خرید
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h5>توضیحات محصول</h5></div>
+            <div class="card-body">
+                <div class="product-description">
+                    {{ product.description|safe|default:"توضیحاتی برای این محصول ثبت نشده است." }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- محصولات مرتبط -->
+{% if related %}
+<div class="row mt-4">
+    <div class="col-12"><h5>محصولات مرتبط</h5></div>
+    {% for p in related %}
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <a href="{% url 'ecommerce:product_detail' p.slug %}">
+                <img class="img-fluid" src="{{ p.image.url }}" alt="{{ p.name }}"
+                     style="height:180px;object-fit:cover;width:100%;">
+            </a>
+            <div class="card-body">
+                <h6 class="mb-1"><a href="{% url 'ecommerce:product_detail' p.slug %}">{{ p.name }}</a></h6>
+                <span class="font-primary f-w-600">{{ p.get_price|intcomma }} ت</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // افزایش/کاهش تعداد
+    document.querySelectorAll('.quantity-left-minus').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var input = this.parentElement.querySelector('.quantity-field');
+            if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+        });
+    });
+    document.querySelectorAll('.quantity-right-plus').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var input = this.parentElement.querySelector('.quantity-field');
+            var max = parseInt(input.getAttribute('max')) || 999;
+            if (parseInt(input.value) < max) input.value = parseInt(input.value) + 1;
+        });
+    });
+</script>
+{% endblock %}

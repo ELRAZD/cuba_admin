@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد NFT | کوبا{% endblock %}
+{% block page_title %}NFT{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">NFT</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Stats Widgets -->
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round primary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#gallery"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ nft_stats.total_nfts|intcomma }}</h4><span class="f-light">کل NFTها</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round success">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#doller-return"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>${{ nft_stats.total_volume|floatformat:0|intcomma }}</h4><span class="f-light">حجم کل</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round warning">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#tag"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ nft_stats.floor_price }} ETH</h4><span class="f-light">کف قیمت</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-3 col-md-6">
+        <div class="card widget-1">
+            <div class="card-body">
+                <div class="widget-content">
+                    <div class="widget-round secondary">
+                        <div class="bg-round">
+                            <svg class="svg-fill"><use href="{% static 'assets/svg/icon-sprite.svg' %}#user"></use></svg>
+                        </div>
+                    </div>
+                    <div><h4>{{ nft_stats.owners|intcomma }}</h4><span class="f-light">مالکان</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="col-xxl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>حجم معاملات</h5></div>
+            <div class="card-body pt-0"><div id="nft-chart"></div></div>
+        </div>
+    </div>
+
+    <div class="col-xxl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>توزیع دسته‌ها</h5></div>
+            <div class="card-body pt-0"><div id="nft-pie"></div></div>
+        </div>
+    </div>
+
+    <!-- NFT Gallery -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-no-border"><h5>گالری NFT</h5></div>
+            <div class="card-body pt-0">
+                <div class="row g-3">
+                    {% for i in "12345678" %}
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border mb-0">
+                            <div class="p-3 bg-light rounded-top text-center" style="height:180px;">
+                                <i data-feather="image" style="width:64px;height:64px;color:#7366ff;"></i>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="mb-1">NFT #{{ forloop.counter }}0{{ forloop.counter }}</h6>
+                                <p class="f-light small mb-2">مجموعه کریپتو پانک</p>
+                                <div class="d-flex justify-content-between">
+                                    <small class="font-primary f-w-600">0.{{ forloop.counter }}5 ETH</small>
+                                    <small class="f-light">#{{ forloop.counter }}0{{ forloop.counter }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) return;
+
+        var chartEl = document.querySelector("#nft-chart");
+        if (chartEl) {
+            new ApexCharts(chartEl, {
+                chart: { type: 'area', height: 320 },
+                series: [{ name: 'حجم', data: [12, 18, 25, 20, 30, 28, 35, 40, 38, 45, 50, 55] }],
+                colors: ['#7366ff'],
+                xaxis: { categories: ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'] },
+            }).render();
+        }
+
+        var pieEl = document.querySelector("#nft-pie");
+        if (pieEl) {
+            new ApexCharts(pieEl, {
+                chart: { type: 'donut', height: 300 },
+                series: [35, 25, 20, 20],
+                labels: ['هنر', 'مجموعه', 'بازی', 'موسیقی'],
+                colors: ['#7366ff', '#ffa200', '#28a745', '#dc3545'],
+            }).render();
+        }
+    });
+</script>
+{% endblock %}

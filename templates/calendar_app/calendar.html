@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}تقویم{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>تقویم</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard:index' %}">
+                <svg class="stroke-icon">
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-home"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="breadcrumb-item active">تقویم</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid calendar-basic">
+    <div class="card">
+      <div class="card-body">
+        <div class="row" id="wrap">
+          <div class="col-xxl-3 box-col-12">
+            <div class="md-sidebar mb-3">
+              <a class="btn btn-primary md-sidebar-toggle" href="javascript:void(0)">فیلتر تقویم</a>
+              <div class="md-sidebar-aside job-left-aside custom-scrollbar">
+                <div id="external-events">
+                  <h4>رویدادهای قابل کشیدن</h4>
+
+                  <!--
+                    رویدادهای قابل کشیدن (Draggable Events) به صورت نمونه در قالب آمده‌اند.
+                    برای اتصال به بک‌اند می‌توانید رویدادهای اخیر کاربر را از context رندر کنید.
+                    در اینجا با استفاده از متغیر recent_events (در صورت وجود در context) نمایش می‌دهیم،
+                    و در غیر این صورت هیچ آیتمی نمایش داده نمی‌شود.
+                  -->
+                  <div id="external-events-list">
+                    {% for event in recent_events %}
+                      <div class="fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event" data-event-id="{{ event.id }}">
+                        <div class="fc-event-main">
+                          <i class="fa fa-calendar me-2"></i>{{ event.title }}
+                        </div>
+                      </div>
+                    {% empty %}
+                      <p class="f-light f-12 mb-0">هیچ رویداد قابل کشیدنی وجود ندارد.</p>
+                    {% endfor %}
+                  </div>
+
+                  <p>
+                    <input class="checkbox_animated" id="drop-remove" type="checkbox">
+                    <label for="drop-remove">پس از رها کردن حذف کنید</label>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxl-9 box-col-12">
+            <div class="calendar-default" id="calendar-container">
+              <div id="calendar"
+                   data-events-url="{% url 'calendar_app:events_json' %}"
+                   data-add-url="{% url 'calendar_app:add' %}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  Modal برای افزودن رویداد جدید (جدید).
+  این Modal در قالب اصلی وجود نداشت. پس از کلیک روی یک روز/بازه در تقویم باز می‌شود
+  و رویداد جدید را به آدرس data-add-url پست می‌کند.
+  ساختار ظاهری از bootstrap modal قالب Cuba استفاده می‌کند.
+-->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'calendar_app:add' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="addEventModalLabel">افزودن رویداد جدید</h5>
+          <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label" for="eventTitle">عنوان</label>
+            <input class="form-control" id="eventTitle" name="title" type="text" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="eventDescription">توضیحات</label>
+            <textarea class="form-control" id="eventDescription" name="description" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="eventStart">شروع</label>
+            <input class="form-control" id="eventStart" name="start" type="datetime-local" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="eventEnd">پایان</label>
+            <input class="form-control" id="eventEnd" name="end" type="datetime-local">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-light" type="button" data-bs-dismiss="modal">لغو</button>
+          <button class="btn btn-primary" type="submit">ذخیره</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!--
+  بارگذاری fullcalendar از استاتیک قالب
+-->
+<script src="{% static 'assets/js/calendar/fullcalendar.min.js' %}"></script>
+
+<!--
+  اسکریپت سفارشی تقویم که از data-events-url و data-add-url استفاده می‌کند.
+  اگر می‌خواهید فایل JS را در پوشه اپ قرار دهید، این خط را به:
+  <script src="{% static 'calendar_app/js/calendar-custom.js' %}"></script>
+  تغییر دهید.
+-->
+<script src="{% static 'calendar_app/js/calendar-custom.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}وظایف{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>وظایف</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{% url 'dashboard:index' %}">
+                <svg class="stroke-icon">
+                  <use href="{% static 'assets/svg/icon-sprite.svg' %}#stroke-home"></use>
+                </svg>
+              </a>
+            </li>
+            <li class="breadcrumb-item">برنامه‌ها</li>
+            <li class="breadcrumb-item active">وظایف</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>لیست وظایف</h5>
+            <div class="card-header-right">
+              <a href="{% url 'tasks:create' %}" class="btn btn-primary">
+                <i class="fa fa-plus me-1"></i> وظیفه جدید
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th>عنوان</th>
+                    <th>پروژه</th>
+                    <th>مسئول</th>
+                    <th>وضعیت</th>
+                    <th>اولویت</th>
+                    <th>مهلت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for task in tasks %}
+                    <tr>
+                      <td>{{ task.title }}</td>
+                      <td>{{ task.project.name|default:"—" }}</td>
+                      <td>{{ task.assignee.get_full_name|default:task.assignee.username|default:"—" }}</td>
+                      <td>
+                        {% if task.status == 'todo' %}
+                          <span class="badge badge-light-secondary">برای انجام</span>
+                        {% elif task.status == 'in_progress' %}
+                          <span class="badge badge-light-primary">در حال انجام</span>
+                        {% elif task.status == 'review' %}
+                          <span class="badge badge-light-warning">بازبینی</span>
+                        {% elif task.status == 'done' %}
+                          <span class="badge badge-light-success">انجام شده</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if task.priority == 'low' %}
+                          <span class="badge badge-light-info">کم</span>
+                        {% elif task.priority == 'medium' %}
+                          <span class="badge badge-light-warning">متوسط</span>
+                        {% elif task.priority == 'high' %}
+                          <span class="badge badge-light-danger">زیاد</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ task.due_date|default:"—" }}</td>
+                      <td>
+                        <form method="post" action="{% url 'tasks:update_status' task.pk %}" class="d-inline">
+                          {% csrf_token %}
+                          <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                            <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>برای انجام</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>در حال انجام</option>
+                            <option value="review" {% if task.status == 'review' %}selected{% endif %}>بازبینی</option>
+                            <option value="done" {% if task.status == 'done' %}selected{% endif %}>انجام شده</option>
+                          </select>
+                        </form>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center text-muted">هیچ وظیفه‌ای برای شما ثبت نشده است.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

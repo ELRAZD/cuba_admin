@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}فهرست محصولات | کوبا{% endblock %}
+{% block page_title %}فهرست محصولات{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">تجارت الکترونیک</li>
+    <li class="breadcrumb-item active">محصولات</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar: فیلتر دسته‌بندی -->
+    <div class="col-xl-3 col-lg-4">
+        <div class="md-sidebar">
+            <a class="btn btn-primary md-sidebar-toggle" href="javascript:void(0)">فیلتر محصولات</a>
+            <div class="md-sidebar-aside job-left-aside custom-scrollbar">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>دسته‌بندی‌ها</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item {% if not request.GET.category %}active{% endif %}">
+                                <a class="{% if not request.GET.category %}text-white{% endif %}"
+                                   href="{% url 'ecommerce:products' %}">همه محصولات</a>
+                            </li>
+                            {% for cat in categories %}
+                            <li class="list-group-item {% if request.GET.category == cat.slug %}active{% endif %}">
+                                <a class="{% if request.GET.category == cat.slug %}text-white{% endif %}"
+                                   href="?category={{ cat.slug }}">{{ cat.name }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main: لیست محصولات -->
+    <div class="col-xl-9 col-lg-8">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-xxl-4 col-md-6 box-col-6">
+                <div class="card">
+                    <div class="product-box">
+                        <div class="product-img">
+                            <a href="{% url 'ecommerce:product_detail' product.slug %}">
+                                <img class="img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}"
+                                     style="height:220px;object-fit:cover;">
+                            </a>
+                            {% if product.discount_price %}
+                            <div class="ribbon ribbon-clip ribbon-warning">
+                                <span>تخفیف</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="product-details">
+                            <div class="rating">
+                                <i class="fa fa-star font-warning"></i>
+                                <i class="fa fa-star font-warning"></i>
+                                <i class="fa fa-star font-warning"></i>
+                                <i class="fa fa-star font-warning"></i>
+                                <i class="fa fa-star-o font-warning"></i>
+                            </div>
+                            <h6 class="f-w-600 mb-1">
+                                <a href="{% url 'ecommerce:product_detail' product.slug %}">{{ product.name }}</a>
+                            </h6>
+                            <p class="f-light">{{ product.short_description|default:''|truncatechars:60 }}</p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="product-price">
+                                    {% if product.discount_price %}
+                                        <del class="f-light f-12">{{ product.price|intcomma }} ت</del>
+                                        <span class="font-success f-w-600 ms-1">{{ product.discount_price|intcomma }} ت</span>
+                                    {% else %}
+                                        <span class="font-primary f-w-600">{{ product.price|intcomma }} ت</span>
+                                    {% endif %}
+                                </div>
+                                <form action="{% url 'ecommerce:cart_add' product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm" title="افزودن به سبد">
+                                        <i data-feather="shopping-cart"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i data-feather="package" style="width:64px;height:64px;color:#ccc;"></i>
+                <h5 class="mt-3 f-light">محصولی یافت نشد.</h5>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                            قبلی
+                        </a>
+                    </li>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if num == products.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                            بعدی
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}مخاطبین | کوبا{% endblock %}
+{% block page_title %}مخاطبین{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">برنامه‌ها</li>
+    <li class="breadcrumb-item active">مخاطبین</li>
+{% endblock %}
+
+{% block content %}
+    <div class="email-wrap bookmark-wrap">
+        <div class="row">
+            <!-- ========== Left Sidebar: Groups + New Contact ========== -->
+            <div class="col-xl-3 box-col-6">
+                <div class="md-sidebar">
+                    <a class="btn btn-primary md-sidebar-toggle" href="javascript:void(0)">فیلتر مخاطبین</a>
+                    <div class="md-sidebar-aside job-left-aside custom-scrollbar">
+                        <div class="email-left-aside">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="email-app-sidebar left-bookmark">
+                                        <div class="media">
+                                            <div class="media-size-email">
+                                                <img class="me-3 rounded-circle" src="{{ user.get_avatar_url }}" alt="">
+                                            </div>
+                                            <div class="media-body">
+                                                <h6 class="f-w-600">{{ user.full_name|default:user.username }}</h6>
+                                                <p>{{ user.email|default:'---' }}</p>
+                                            </div>
+                                        </div>
+                                        <ul class="nav main-menu contact-options" role="tablist">
+                                            <li class="nav-item">
+                                                <button class="button-primary btn-block btn-mail w-100" type="button"
+                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                    <i class="me-2" data-feather="users"></i> مخاطب جدید
+                                                </button>
+                                            </li>
+                                            <li class="nav-item"><span class="main-title">گروه‌ها</span></li>
+                                            <li>
+                                                <a href="{% url 'contacts:list' %}">
+                                                    <span class="title">همه مخاطبین ({{ contacts.count }})</span>
+                                                </a>
+                                            </li>
+                                            {% for group in groups %}
+                                                <li>
+                                                    <a href="{% url 'contacts:list' %}?group={{ group.pk }}">
+                                                        <span class="title">{{ group.name }}</span>
+                                                    </a>
+                                                </li>
+                                            {% empty %}
+                                                <li>
+                                                    <a href="#">
+                                                        <span class="title f-light small">هنوز گروهی نساخته‌اید</span>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== Right Area: Contacts List + Detail ========== -->
+            <div class="col-xl-9 col-md-12 box-col-12">
+                <div class="email-right-aside bookmark-tabcontent contacts-tabs">
+                    <div class="card email-body radius-left dark-contact">
+                        <div class="ps-0">
+                            <div class="tab-content">
+                                <div class="tab-pane fade active show" id="pills-personal" role="tabpanel">
+                                    <div class="card mb-0">
+                                        <div class="card-header d-flex">
+                                            <h5>مخاطبین</h5>
+                                            <span class="f-14 pull-right mt-0">{{ contacts.count }} مخاطب</span>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="row list-persons" id="addcon">
+                                                <!-- Contact list (nav pills) -->
+                                                <div class="col-xl-4 xl-50 col-md-5">
+                                                    <div class="nav flex-column nav-pills" id="v-pills-tab"
+                                                         role="tablist" aria-orientation="vertical">
+                                                        {% for contact in contacts %}
+                                                            <a class="contact-tab-{{ forloop.counter0 }} nav-link {% if forloop.first %}active{% endif %}"
+                                                               id="v-pills-tab-{{ contact.pk }}"
+                                                               data-bs-toggle="pill"
+                                                               href="#v-pills-{{ contact.pk }}"
+                                                               role="tab"
+                                                               aria-controls="v-pills-{{ contact.pk }}"
+                                                               aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                                                <div class="media">
+                                                                    {% if contact.avatar %}
+                                                                        <img class="img-50 img-fluid m-r-20 rounded-circle"
+                                                                             src="{{ contact.avatar.url }}" alt="">
+                                                                    {% else %}
+                                                                        <img class="img-50 img-fluid m-r-20 rounded-circle"
+                                                                             src="{% static 'assets/images/user/user.png' %}"
+                                                                             alt="">
+                                                                    {% endif %}
+                                                                    <div class="media-body">
+                                                                        <h6>
+                                                                            {{ contact.first_name }}
+                                                                            {{ contact.last_name }}
+                                                                        </h6>
+                                                                        <p>{{ contact.email|default:contact.phone|default:'---' }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        {% empty %}
+                                                            <div class="text-center p-4 f-light">
+                                                                هنوز مخاطبی ندارید.
+                                                                <a href="{% url 'contacts:create' %}">اولین مخاطب را
+                                                                    بسازید</a>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+
+                                                <!-- Detail panels -->
+                                                <div class="col-xl-8 xl-50 col-md-7">
+                                                    <div class="tab-content" id="v-pills-tabContent">
+                                                        {% for contact in contacts %}
+                                                            <div class="tab-pane contact-tab-{{ forloop.counter0 }} tab-content-child fade {% if forloop.first %}show active{% endif %}"
+                                                                 id="v-pills-{{ contact.pk }}" role="tabpanel"
+                                                                 aria-labelledby="v-pills-tab-{{ contact.pk }}">
+                                                                <div class="profile-mail">
+                                                                    <div class="media">
+                                                                        {% if contact.avatar %}
+                                                                            <img class="img-100 img-fluid m-r-20 rounded-circle"
+                                                                                 src="{{ contact.avatar.url }}" alt="">
+                                                                        {% else %}
+                                                                            <img class="img-100 img-fluid m-r-20 rounded-circle"
+                                                                                 src="{% static 'assets/images/user/user.png' %}"
+                                                                                 alt="">
+                                                                        {% endif %}
+                                                                        <div class="media-body mt-0">
+                                                                            <h5>{{ contact.first_name }} {{ contact.last_name }}</h5>
+                                                                            <p>{{ contact.email|default:'---' }}</p>
+                                                                            <ul>
+                                                                                <li>
+                                                                                    <a href="{% url 'contacts:detail' contact.pk %}">مشاهده</a>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <form method="post"
+                                                                                          action="{% url 'contacts:delete' contact.pk %}"
+                                                                                          style="display:inline;">
+
+                                                                                        {% csrf_token %}
+
+                                                                                        <button type="submit"
+                                                                                                class="btn btn-link text-danger p-0"
+                                                                                                onclick="return confirm('آیا از حذف این مخاطب مطمئنید؟')">
+
+                                                                                            حذف
+
+                                                                                        </button>
+                                                                                    </form>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <a href="#"
+                                                                                       onclick="populatePrintModal('{{ contact.first_name }} {{ contact.last_name }}', '{{ contact.email|default:'' }}')"
+                                                                                       data-bs-toggle="modal"
+                                                                                       data-bs-target="#printModal">پرینت</a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="email-general">
+                                                                        <h6 class="mb-3">عمومی</h6>
+                                                                        <ul>
+                                                                            <li>نام
+                                                                                <span class="font-primary">{{ contact.first_name }}</span>
+                                                                            </li>
+                                                                            {% if contact.last_name %}
+                                                                                <li>نام خانوادگی
+                                                                                    <span class="font-primary">{{ contact.last_name }}</span>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                            <li>ایمیل
+                                                                                <span class="font-primary">{{ contact.email|default:'---' }}</span>
+                                                                            </li>
+                                                                            <li>تلفن
+                                                                                <span class="font-primary">
+                                                                                {{ contact.phone|default:'---' }}
+                                                                                ({{ contact.get_phone_type_display }})
+                                                                            </span>
+                                                                            </li>
+                                                                            {% if contact.city %}
+                                                                                <li>شهر
+                                                                                    <span class="font-primary">{{ contact.city }}</span>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                            {% if contact.group %}
+                                                                                <li>گروه
+                                                                                    <span class="font-primary">{{ contact.group.name }}</span>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                            {% if contact.bio %}
+                                                                                <li>درباره
+                                                                                    <span class="font-primary">{{ contact.bio }}</span>
+                                                                                </li>
+                                                                            {% endif %}
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% empty %}
+                                                            <div class="text-center p-5 f-light">
+                                                                یک مخاطب بسازید تا جزئیاتش را اینجا ببینید.
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Modal: Add New Contact ========== -->
+    <div class="modal fade modal-bookmark" id="exampleModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">افزودن مخاطب</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-bookmark needs-validation" method="post"
+                          action="{% url 'contacts:create' %}" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-2">
+                            <div class="mb-3 col-md-12 mt-0">
+                                <label for="con-name">نام <span class="text-danger">*</span></label>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="con-name" type="text"
+                                               name="first_name" required placeholder="نام کوچک">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="con-last" type="text"
+                                               name="last_name" placeholder="نام خانوادگی">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-12 mt-0">
+                                <label for="con-mail">آدرس ایمیل</label>
+                                <input class="form-control" id="con-mail" type="email"
+                                       name="email" placeholder="example@mail.com">
+                            </div>
+                            <div class="mb-3 col-md-12 my-0">
+                                <label for="con-phone">تلفن</label>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input class="form-control" id="con-phone" type="text"
+                                               name="phone" placeholder="09xxxxxxxxx">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <select class="form-control" id="con-select" name="phone_type">
+                                            <option value="mobile">موبایل</option>
+                                            <option value="work">کار</option>
+                                            <option value="other">سایر</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" type="submit">ذخیره</button>
+                        <button class="btn btn-primary" type="button" data-bs-dismiss="modal">لغو</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Modal: Print Contact ========== -->
+    <div class="modal fade modal-bookmark" id="printModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">پیش‌نمایش چاپ</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body list-persons">
+                    <div class="profile-mail pt-0" id="DivIdToPrint">
+                        <div class="media">
+                            <img class="img-100 img-fluid m-r-20 rounded-circle"
+                                 src="{% static 'assets/images/user/user.png' %}" alt="">
+                            <div class="media-body mt-0">
+                                <h5><span id="printName">---</span></h5>
+                                <p id="printEmail">---</p>
+                            </div>
+                        </div>
+                        <div class="email-general">
+                            <h6>عمومی</h6>
+                            <p>ایمیل: <span class="font-primary" id="printEmailLine">---</span></p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" type="button" onclick="window.print()">پرینت</button>
+                    <button class="btn btn-primary" type="button" data-bs-dismiss="modal">لغو</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function populatePrintModal(name, email) {
+            document.getElementById('printName').textContent = name;
+            document.getElementById('printEmail').textContent = email;
+            document.getElementById('printEmailLine').textContent = email;
+        }
+    </script>
+{% endblock %}

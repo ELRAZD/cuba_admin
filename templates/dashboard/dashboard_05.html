@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}داشبورد اجتماعی | کوبا{% endblock %}
+{% block page_title %}اجتماعی{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item">داشبورد</li>
+    <li class="breadcrumb-item active">اجتماعی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <!-- Profile Card -->
+    <div class="col-xxl-4 col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <img class="img-100 rounded-circle mb-3" src="{{ user.get_avatar_url }}" alt="">
+                <h5 class="mb-0">{{ user.full_name }}</h5>
+                <p class="f-light">@{{ user.username }}</p>
+                <div class="row text-center mt-3">
+                    <div class="col-4 border-end">
+                        <h6 class="m-0">{{ social_stats.followers|intcomma }}</h6>
+                        <small class="f-light">فالوور</small>
+                    </div>
+                    <div class="col-4 border-end">
+                        <h6 class="m-0">{{ social_stats.following|intcomma }}</h6>
+                        <small class="f-light">فالووینگ</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="m-0">{{ social_stats.posts_count }}</h6>
+                        <small class="f-light">پست</small>
+                    </div>
+                </div>
+                <a class="btn btn-primary mt-3 w-100" href="{% url 'blog:add_post' %}">پست جدید</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Engagement Widgets -->
+    <div class="col-xxl-8 col-md-6">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card small-widget">
+                    <div class="card-body primary">
+                        <span class="f-light">لایک‌ها</span>
+                        <div class="d-flex align-items-end gap-1">
+                            <h4>{{ social_stats.likes|intcomma }}</h4>
+                            <span class="font-primary f-12"><i class="icon-arrow-up"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card small-widget">
+                    <div class="card-body warning">
+                        <span class="f-light">کامنت‌ها</span>
+                        <div class="d-flex align-items-end gap-1">
+                            <h4>{{ social_stats.comments|intcomma }}</h4>
+                            <span class="font-warning f-12"><i class="icon-arrow-up"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card small-widget">
+                    <div class="card-body success">
+                        <span class="f-light">پست‌ها</span>
+                        <div class="d-flex align-items-end gap-1">
+                            <h4>{{ social_stats.posts_count }}</h4>
+                            <span class="font-success f-12"><i class="icon-arrow-up"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header card-no-border"><h5>آمار روزانه</h5></div>
+                    <div class="card-body pt-0"><div id="social-chart"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Posts Feed -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header card-no-border d-flex justify-content-between">
+                <h5 class="m-0">پست‌های اخیر</h5>
+                <a class="f-light" href="{% url 'blog:list' %}">همه پست‌ها</a>
+            </div>
+            <div class="card-body pt-0">
+                <div class="row g-3">
+                    {% for post in recent_posts %}
+                    <div class="col-md-6">
+                        <div class="card border mb-0">
+                            {% if post.image %}
+                            <img class="card-img-top" src="{{ post.image.url }}" alt="{{ post.title }}" style="height:180px;object-fit:cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h6 class="mb-2"><a href="{% url 'blog:detail' post.slug %}">{{ post.title }}</a></h6>
+                                <p class="f-light small mb-2">{{ post.summary|default:post.content|striptags|truncatechars:100 }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <small class="f-light"><i data-feather="eye" style="width:14px;"></i> {{ post.views }}</small>
+                                    <small class="f-light">{{ post.created_at|timesince }} پیش</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center f-light">پستی موجود نیست.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/chart/apex-chart/apex-chart.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.querySelector("#social-chart");
+        if (el && window.ApexCharts) {
+            new ApexCharts(el, {
+                chart: { type: 'bar', height: 200, stacked: true },
+                series: [
+                    { name: 'لایک', data: [120, 150, 180, 220, 190, 250, 300] },
+                    { name: 'کامنت', data: [30, 45, 60, 80, 55, 90, 120] },
+                ],
+                colors: ['#7366ff', '#ffa200'],
+                xaxis: { categories: ['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'] },
+            }).render();
+        }
+    });
+</script>
+{% endblock %}
