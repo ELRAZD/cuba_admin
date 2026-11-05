@@ -5,20 +5,30 @@ from django.db.models import Q
 from django.db.models import Count
 
 from .models import ChatRoom, Message
+from django.http import JsonResponse
+from django.utils import timezone
 
 User = get_user_model()
 
 
 def _get_or_create_private_room(user1, user2):
-    room = ChatRoom.objects.filter(
-        room_type='private',
-        participants=user1,
-    ).filter(
-        participants=user2,
-    ).annotate(num_participants=Count('participants')).filter(num_participants=2).first()
-    if not room:
+    room = (
+        ChatRoom.objects.filter(
+            room_type='private',
+            participants=user1,
+        )
+        .filter(participants=user2)
+        .annotate(
+            num_participants=Count('participants', distinct=True)
+        )
+        .filter(num_participants=2)
+        .first()
+    )
+
+    if room is None:
         room = ChatRoom.objects.create(room_type='private')
         room.participants.add(user1, user2)
+
     return room
 
 
@@ -98,4 +108,45 @@ def chat_video(request):
     all_users = User.objects.exclude(pk=request.user.pk).filter(is_active=True)[:20]
     return render(request, 'chat/chat_video.html', {
         'all_users': all_users,
+    })
+
+@login_required
+def chat_messages_api(request, room_id):
+    room = get_object_or_404(
+        ChatRoom,
+        pk=room_id,
+        room_type='private',
+        participants=request.user
+    )
+
+    try:
+        after_id = int(request.GET.get('after', 0))
+    except (ValueError, TypeError):
+        after_id = 0
+
+    new_messages = (
+        room.messages
+        .filter(pk__gt=after_id)
+        .select_related('sender')
+        .order_by('created_at')
+    )
+
+    data = []
+
+    for msg in new_messages:
+        data.append({
+            'id': msg.id,
+            'sender_id': msg.sender_id,
+            'body': msg.body,
+            'created_at': timezone.localtime(
+                msg.created_at
+            ).strftime('%H:%M'),
+        })
+
+    room.messages.filter(
+        pk__in=[msg['id'] for msg in data]
+    ).exclude(sender=request.user).update(is_read=True)
+
+    return JsonResponse({
+        'messages': data
     })
